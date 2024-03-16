@@ -1,0 +1,142 @@
+@import "./tokens.scss";
+
+.App {
+  --primaryTheme: var(--primaryThemeColor, #{$primaryLight});
+  --secondaryTheme: var(--secondaryThemeColor, #{$secondaryLight});
+
+  --primaryFontTheme: var(--primaryFontThemeColor, #{$primaryDark});
+  --secondaryFontTheme: var(--secondaryFontThemeColor, #{$secondaryDark});
+
+  &.darkMode {
+    --primaryThemeColor: #{$primaryDark};
+    --secondaryThemeColor: #{$secondaryDark};
+  
+    --primaryFontThemeColor: #{$primaryLight};
+    --secondaryFontThemeColor: #{$secondaryLight};
+  }
+}
+
+body,
+.App {
+  background-color: var(--secondaryTheme);
+  min-height: 100vh;
+  font-size: 1rem;
+}
+
+a {
+  color: $primaryColor !important;
+  text-decoration: none;
+}
+
+#nav-bar-wrapper {
+  opacity: 1;
+}
+
+.dashChart {
+  width: 100%;
+
+  img {
+    width: 100%;
+  }
+}
+
+.flexBox {
+  display: flex;
+  gap: 1rem;
+}
+
+.chartBox {
+  box-shadow: 0px 0px 14px #474747;
+  background-color: var(--primaryTheme);
+  // margin-bottom: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  
+  .chartTitle {
+    width: 100%;
+
+    h2 {
+      text-align: center;
+      font-weight: normal;
+    }
+  }
+}
+
+.chartOptions {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  border-bottom: 1px solid var(--secondaryFontTheme);
+  max-width: calc(1200px - 2rem);
+  
+
+  button {
+    width: 150px;
+  }
+}
+
+.chartDropdown {
+  width: 200px;
+}
+
+table thead th.MuiTableCell-root {
+  font-weight: bold;
+  background-color: var(--primaryTheme) !important;
+}
+
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root {
+  color: $primaryColor;
+}
+.MuiFormControl-root label {
+  color: var(--secondaryFontTheme);
+}
+
+// .chartOptions>.MuiFormControl-root{
+
+//   right: 4rem;
+//   //position: relative !important;
+// }
+
+// @media (max-width: 900px) {
+//   .chartOptions>.MuiFormControl-root{
+//     //position: relative !important;
+//   }
+// }
+
+button.MuiButton-containedPrimary {
+  background-color: $primaryColor;
+
+  &:hover {
+    background-color: $primaryColorHover;
+  }
+}
+
+/*Made Content flex*/
+.app-main-content {
+  display: flex;
+  overflow: hidden;
+  height: 100vh;
+}
+.app-content {
+  flex: 1;
+  transition: 0.2s;
+  color: var(--primaryFontTheme);
+  padding: 110px 2rem 1rem 2rem;
+  overflow: auto;
+  margin: 80px 0 0 0;
+  padding: 30px 2rem 1rem 2rem;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media only screen and (max-width: 899px) {
+  .desktop-only {
+    display: none;
+  }
+  .mobile-only {
+    display: block;
+  }
+}

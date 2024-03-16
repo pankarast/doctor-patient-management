@@ -1,0 +1,91 @@
+@import "../../tokens.scss";
+
+$myColor: red;
+$navigationBarBackgroundColor: $primaryColor;
+
+#nav-bar-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: var(--primaryTheme);
+  display: flex;
+  padding: 1rem;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  box-sizing: border-box;
+  color: var(--primaryFontTheme);
+  box-shadow: 1px 1px 8px 1px $secondaryColor;
+  z-index: 9999;
+
+  #navTitle {
+    border-left: 1px solid var(--primaryFontTheme);
+    padding-left: 32px;
+
+    h2 {
+      margin: 0;
+      font-weight: normal;
+    }
+  }
+
+  a {
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  #nav-main-part {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+
+    .logo {
+      padding-top: 5px;
+    }
+
+    nav {
+      display: flex;
+      gap: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      align-self: flex-end;
+    }
+  }
+
+  #secondary-menu {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    gap: 16px;
+
+    a {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+
+      svg {
+        vertical-align: middle;
+        height: 20px;
+        width: 20px;
+        align-self: flex-end;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 899px) {
+  #navTitle {
+    padding-left: 12px !important;
+  }
+  #nav-bar-wrapper #nav-main-part {
+    gap: 12px !important;
+  }
+}
