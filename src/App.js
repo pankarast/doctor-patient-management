@@ -1,12 +1,6 @@
 import "./App.scss";
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import DoctorRegistration from './components/DoctorRegistration';
-import PatientRegistration from './components/PatientRegistration';
-import DoctorSelection from './components/DoctorSelection';
-import AppointmentBooking from './components/AppointmentBooking';
-import AppointmentList from './components/AppointmentList';
-import LandingPage from './components/LandingPage';
+import React, {useState} from "react";
+import {BrowserRouter} from "react-router-dom";
 
 import SideBar from "./components/SideBar/SideBar"
 import NavigationBar from "./components/Navigation/NavigationBar";
@@ -18,7 +12,6 @@ function App() {
 
   return (
   <>
-    (
     <BrowserRouter>
       <div id="App" className={`App ${themeState ? 'darkMode' : ''}`}>
         <NavigationBar title={navBarTitle} setThemeState={setThemeState}/>
@@ -30,7 +23,6 @@ function App() {
         </div>
       </div>
     </BrowserRouter>
-    )
     </>
   );
 }

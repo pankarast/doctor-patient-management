@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import NavigationBar from "../../components/Navigation/NavigationBar";
+import NavigationBar from "../../Navigation/NavigationBar.js";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -14,8 +14,8 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import ResourceListService from "../../services/ResourceListService";
-import Loader from "../../components/Loader/Loader.js";
+import ResourceListService from "../../services/ResourceListService.js";
+import Loader from "../../Loader/Loader.js";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {

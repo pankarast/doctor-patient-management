@@ -8,7 +8,6 @@ import {
   MdLogout,
 } from "react-icons/md";
 import { BiSolidUserCircle } from "react-icons/bi";
-import UserService from "../../services/UserService";
 
 function Container({ children }) {
   const [nav, setNav] = useState(true);
@@ -32,7 +31,7 @@ function Container({ children }) {
               <div className="menuIcon">
               <BiSolidUserCircle />{" "}
               </div>
-              <h3><UserService.GetUserName /></h3>
+              <h3> Username </h3>
             </div>
           </NavLink>
           <NavLink
@@ -40,7 +39,7 @@ function Container({ children }) {
             activeClassName="active"
             to="/sign-in"
             className="menuItemWrap"
-            onClick={UserService.doLogout}
+            
           >
             <div className="menuItemAcc" id="philosophy">
               <div className="menuIcon">

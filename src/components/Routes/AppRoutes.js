@@ -1,21 +1,33 @@
 import {Route, Routes, useLocation} from "react-router-dom";
-import LandingPage from "../../pages/LandingPage/LandingPage";
-import ResourceList from "../../pages/ResourceList/ResourceList";
+import LandingPage from "../../components/pages/LandingPage/LandingPage";
+import ResourceList from "../../components/pages/ResourceList/ResourceList";
 
-import Profile from "../../pages/Profile/Profile";
+import Profile from "../../components/pages/Profile/Profile";
+
+import SignIn from "../../components/pages/SignIn/SignIn";
+
+import DoctorRegistration from "../../components/DoctorRegistration";
+import PatientRegistration from "../../components/PatientRegistration";
+import DoctorSelection from "../../components/DoctorSelection";
+import AppointmentBooking from "../../components/AppointmentBooking";
+import AppointmentList from "../../components/AppointmentList";
+import { useAuth } from '../../components/AuthContext'; 
+
 import React, {useEffect} from "react";
+
+
 
 const AppRoutes = ({setTitle}) => {
     const location = useLocation();
+
+    const { isLoggedIn } = useAuth();
 
     const routesList = [{
         path: "/resource-list", title: "Resource List", element: <ResourceList/>
     }, {
         path: "/profile", title: "Profile", element: <Profile/>
     }, {
-        path: "/dashboard", title: "Dashboard", element: <LandingPage/>
-    }, {
-        path: "/", title: "Dashboard", element: <LandingPage/>
+        path: "/", title: "LandingPage", element: <LandingPage/>
     },{
         path: "/register-doctor", title: "Doctor Registration", element: <DoctorRegistration/>
     },{
@@ -36,12 +48,22 @@ const AppRoutes = ({setTitle}) => {
         })
     }, [location.pathname])
 
-    return (<Routes>
-            {/* <Route path="/login" element={<SignIn />} /> */}
-        {routesList.map((item, index) =>
-            <Route path={item.path} element={item.element} key={index}/>
-        )}
-            {/* <Route path="*" element={<SignIn />} /> */}
-        </Routes>)
-}
+
+    
+    return (
+        isLoggedIn ? (
+        <Routes>
+        {/* <Route path="/login" element={<SignIn />} /> */}
+    {routesList.map((item, index) =>
+        <Route path={item.path} element={item.element} key={index}/>
+    )}
+        {/* <Route path="*" element={<SignIn />} /> */}
+    </Routes>
+
+    ): (
+        <SignIn />
+      )
+    
+   );
+};
 export default AppRoutes;

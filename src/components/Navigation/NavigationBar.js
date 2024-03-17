@@ -3,6 +3,7 @@ import "./NavigationBar.scss";
 import { Link } from "react-router-dom";
 import ThemeSwitch from "./ThemeSwitch";
 
+
 const NavigationBar = ({title, setThemeState}) => {
   return (
     <div>
@@ -10,16 +11,16 @@ const NavigationBar = ({title, setThemeState}) => {
         <div id="nav-main-part">
           <Link to="/">
             <img
-              src="/favicon.ico"
-              alt="Sunrise Logo"
+              src="/AppLogo.png"
+              alt=" Logo mobile"
               class="logo mobile-only"
               width="40"
             />
             <img
-              src="/SUNRISE-Logo.png"
-              alt="Sunrise Logo"
+              src="/AppLogo.png"
+              alt="Logo"
               class="logo desktop-only"
-              width="200"
+              width="40"
             />
           </Link>
           <div id="navTitle">
