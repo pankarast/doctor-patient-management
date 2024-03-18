@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -19,16 +20,26 @@ import { useAuth } from '../../AuthContext';
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+
+  const navigate = useNavigate(); // Hook to navigate
+
+  const { login } = useAuth(); // Use the login function from context
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const amka = data.get('amka'); // Make sure 'name' attributes in your form match these keys
     const password = data.get('password');
-    login(amka, password); // Call login with amka and password
+     try {
+      await login(amka, password); // Assuming login() is now an async function
+      navigate('/'); // Redirect to homepage on success
+    } catch (error) {
+      // Handle login error (e.g., show an error message)
+      console.error("Login failed:", error);
+    }
 };
 
 
-  const { login } = useAuth(); // Use the login function from context
 
   return (
     <ThemeProvider theme={defaultTheme}>
