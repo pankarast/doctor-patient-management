@@ -14,10 +14,29 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(loggedInStatus);
   }, []);
 
-  const login = () => {
-    sessionStorage.setItem('isLoggedIn', 'true');
-    setIsLoggedIn(true);
-  };
+  const login = async (amka, password) => {
+    try {
+        const response = await fetch('http://localhost:8080/patients/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ socialSecurityNumber: amka, password }),
+        });
+
+        if (response.ok) {
+            // Assuming login success when response status is 200
+            sessionStorage.setItem('isLoggedIn', 'true');
+            setIsLoggedIn(true);
+        } else {
+            // Handle unsuccessful login attempt (e.g., invalid credentials)
+            console.error('Login failed with status:', response.status);
+        }
+    } catch (error) {
+        console.error('Login request failed with error:', error);
+    }
+};
+
 
   const logout = () => {
     sessionStorage.removeItem('isLoggedIn');
@@ -27,7 +46,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     isLoggedIn,
     login,
-    logout
+    logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

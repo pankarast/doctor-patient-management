@@ -15,19 +15,6 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useAuth } from '../../AuthContext'; 
 
 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
-// TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
@@ -35,15 +22,13 @@ export default function SignIn() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    login();
-  };
+    const amka = data.get('amka'); // Make sure 'name' attributes in your form match these keys
+    const password = data.get('password');
+    login(amka, password); // Call login with amka and password
+};
+
 
   const { login } = useAuth(); // Use the login function from context
-
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -68,10 +53,9 @@ export default function SignIn() {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="amka"
+              label="AMKA"
+              name="amka"
               autoFocus
             />
             <TextField
@@ -84,10 +68,6 @@ export default function SignIn() {
               id="password"
               autoComplete="current-password"
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
@@ -95,22 +75,12 @@ export default function SignIn() {
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
+            </Button>     
+            <Link href="#" variant="body2">
+              {"Don't have an account? Sign Up"}
+            </Link>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
   );

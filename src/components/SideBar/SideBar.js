@@ -8,9 +8,11 @@ import {
   MdLogout,
 } from "react-icons/md";
 import { BiSolidUserCircle } from "react-icons/bi";
+import { useAuth } from '../../components/AuthContext'; 
 
 function Container({ children }) {
   const [nav, setNav] = useState(true);
+  const { logout } = useAuth();
 
   const Change = () => {
     setNav((prevNav) => !prevNav);
@@ -41,11 +43,17 @@ function Container({ children }) {
             className="menuItemWrap"
             
           >
+            <div
+              className="menuItemWrap"
+              onClick={() => logout()} // Call logout when this element is clicked
+              style={{ cursor: 'pointer' }} // Make it look clickable
+            >
             <div className="menuItemAcc" id="philosophy">
               <div className="menuIcon">
               <MdLogout />
               </div>
               <h3>Log Out</h3>
+            </div>
             </div>
           </NavLink>
             
