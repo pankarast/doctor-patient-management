@@ -8,25 +8,27 @@ import SignUp from "../../components/pages/SignUp/SignUp";
 import DoctorRegistration from "../../components/DoctorRegistration";
 import PatientRegistration from "../../components/PatientRegistration";
 import DoctorSelection from "../../components/DoctorSelection";
-import AppointmentBooking from "../../components/AppointmentBooking";
 import AppointmentList from "../../components/AppointmentList";
 import { useAuth } from '../../components/AuthContext'; 
+import DoctorsList from "../../components/pages/DoctorsList/DoctorsList";
+import AppointmentBooking from "../../components/pages/Appointment/AppointmentBooking"; // Adjust the import path as necessary
+
 
 const AppRoutes = ({ setTitle }) => {
     const location = useLocation();
     const { isLoggedIn } = useAuth();
 
     const routesList = [
-        { path: "/resource-list", title: "Resource List", element: <ResourceList/> },
+        { path: "/resource-list", title: "Resource List", element: <DoctorsList/> },
         { path: "/profile", title: "Profile", element: <Profile/> },
         { path: "/", title: "LandingPage", element: <LandingPage/> },
         { path: "/register-doctor", title: "Doctor Registration", element: <DoctorRegistration/> },
         { path: "/register-patient", title: "Patient Registration", element: <PatientRegistration/> },
         { path: "/select-doctor", title: "Doctor Selection", element: <DoctorSelection/> },
-        { path: "/book-appointment", title: "Appointment Booking", element: <AppointmentBooking/> },
         { path: "/appointments", title: "Appointments", element: <AppointmentList/> },
         { path: "/sign-in", title: "Sign In", element: <SignIn /> },
         { path: "/sign-up", title: "Sign Up", element: <SignUp /> },
+        { path: "/appointment/:doctorId", title: "Appointment Booking", element: <AppointmentBooking /> },
     ];
 
     useEffect(() => {
