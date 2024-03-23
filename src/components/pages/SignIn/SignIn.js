@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useAuth } from '../../AuthContext'; 
+import { Link as RouterLink } from 'react-router-dom';
 
 
 
@@ -87,7 +88,7 @@ export default function SignIn() {
             >
               Sign In
             </Button>     
-            <Link href="#" variant="body2">
+            <Link component={RouterLink} to="/sign-up" variant="body2">
               {"Don't have an account? Sign Up"}
             </Link>
           </Box>
