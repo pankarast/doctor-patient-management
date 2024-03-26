@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./SideBar.scss";
-import {
-  MdDashboard,
-  MdFormatListBulleted,
-  MdSignalCellularAlt,
-  MdLogout,
-} from "react-icons/md";
+import { MdLogout } from "react-icons/md";
+import { MdOutlinePersonSearch} from "react-icons/md";
+import { FaRegCalendarAlt } from "react-icons/fa";
 import { BiSolidUserCircle } from "react-icons/bi";
 import { useAuth } from '../../components/AuthContext'; 
 
@@ -74,29 +71,29 @@ function Container({ children }) {
           <NavLink activeclassname="active" to="/" className="menuItemWrap">
             <div className="menuItemAcc" id="philosophy">
               <div className="menuIcon">
-                <MdDashboard />
+                <FaRegCalendarAlt />
               </div>
-              <h3>Dasboard</h3>
+              <h3>Appointments</h3>
             </div>
           </NavLink>
 
-          <NavLink activeclassname="active" to="/resource-list" className="menuItemWrap">
+          <NavLink activeclassname="active" to="/doctor-list" className="menuItemWrap">
             <div className="menuItemAcc" id="mission">
               <div className="menuIcon">
-                <MdFormatListBulleted />
+                <MdOutlinePersonSearch />
               </div>
-              <h3>Resource List</h3>
+              <h3>Doctor Search</h3>
             </div>
           </NavLink>
 
-          <NavLink activeclassname="active" to="/grafana-diagram" className="menuItemWrap">
+          {/* <NavLink activeclassname="active" to="/grafana-diagram" className="menuItemWrap">
             <div className="menuItemAcc" id="diagram">
               <div className="menuIcon">
                 <MdSignalCellularAlt />
               </div>
               <h3>Demand Prediction</h3>
             </div>
-          </NavLink>
+          </NavLink> */}
         </div>
       </div>
     </div>

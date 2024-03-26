@@ -19,7 +19,7 @@ const AppRoutes = ({ setTitle }) => {
     const { isLoggedIn } = useAuth();
 
     const routesList = [
-        { path: "/resource-list", title: "Doctor List", element: <DoctorsList/> },
+        { path: "/doctor-list", title: "Doctor List", element: <DoctorsList/> },
         { path: "/profile", title: "Profile", element: <Profile/> },
         { path: "/", title: "Appointments", element: <AppointmentList/> },
         { path: "/register-doctor", title: "Doctor Registration", element: <DoctorRegistration/> },
