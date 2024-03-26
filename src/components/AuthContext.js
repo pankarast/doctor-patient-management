@@ -7,6 +7,8 @@ export function useAuth() {
 }
 
 export const AuthProvider = ({ children }) => {
+
+  const [userId, setUserId] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -25,11 +27,13 @@ export const AuthProvider = ({ children }) => {
         });
 
         if (response.ok) {
-            // Assuming login success when response status is 200
+            const data = await response.json();
+            // Assuming the response includes a "user" object with the user details
             sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('userId', data.user.id); // Store the user ID
             setIsLoggedIn(true);
+            setUserId(data.user.id); // Update state with the user ID
         } else {
-            // Handle unsuccessful login attempt (e.g., invalid credentials)
             console.error('Login failed with status:', response.status);
         }
     } catch (error) {
@@ -38,13 +42,17 @@ export const AuthProvider = ({ children }) => {
 };
 
 
+
   const logout = () => {
     sessionStorage.removeItem('isLoggedIn');
     setIsLoggedIn(false);
+    sessionStorage.removeItem('userId');
+    setUserId(null);
   };
 
   const value = {
     isLoggedIn,
+    userId,
     login,
     logout,
   };

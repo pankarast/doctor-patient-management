@@ -5,6 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { Grid, Button, Typography, Card, CardContent, TextField, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import dayjs from 'dayjs';
+import { useAuth } from '../../AuthContext';
 
 function AppointmentBooking() {
     const { doctorId } = useParams(); // Get the doctor ID from URL parameters
@@ -12,6 +13,7 @@ function AppointmentBooking() {
     const [selectedTime, setSelectedTime] = useState('');
     const [availableHours, setAvailableHours] = useState([]);
     const [doctor, setDoctor] = useState({ name: '', specialty: '', area: '' });
+    const { userId } = useAuth();
 
     useEffect(() => {
         const fetchDoctorDetails = async () => {
@@ -48,7 +50,7 @@ function AppointmentBooking() {
         // Example structure, adapt according to your API's requirements
         const appointmentData = {
             doctorId: parseInt(doctorId, 10), // Ensure doctorId is sent as an integer
-            patientId: 1, // Replace with the actual patient ID (logged-in user's ID, for example)
+            patientId: userId, // Replace with the actual patient ID (logged-in user's ID, for example)
             appointmentTime: `${selectedDate.format('YYYY-MM-DD')}T${selectedTime}`,
             reason: "Routine Checkup", // This could also be dynamic based on user input
         };
