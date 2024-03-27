@@ -11,7 +11,6 @@ import {
   FormControl,
   InputLabel,
   Button,
-  FormGroup,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
@@ -48,6 +47,31 @@ const ContactTypography = styled(Typography)(({ theme }) => ({
 function AppointmentList() {
   const [appointments, setAppointments] = useState([]);
   const { userId } = useAuth();
+  const [filter, setFilter] = useState("all"); // Possible values: "all", "week", "month"
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
+
+  useEffect(() => {
+    const filtered = appointments.filter(appointment => {
+        const appointmentDate = new Date(appointment.appointmentTime);
+        const now = new Date();
+        const startOfWeek = now.getDate() - now.getDay();
+        const endOfWeek = startOfWeek + 6;
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+        switch (filter) {
+            case "week":
+                return appointmentDate >= new Date(now.setDate(startOfWeek)) && appointmentDate <= new Date(now.setDate(endOfWeek));
+            case "month":
+                return appointmentDate >= startOfMonth && appointmentDate <= endOfMonth;
+            default:
+                return true;
+        }
+    });
+    setFilteredAppointments(filtered);
+}, [appointments, filter]);
+
+
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -91,8 +115,13 @@ function AppointmentList() {
 
   return (
     <Box sx={{ mt: 4 }}>
+      <Box sx={{ mb: 2 }}>
+        <Button variant="contained" onClick={() => setFilter("all")}>All</Button>
+        <Button variant="contained" onClick={() => setFilter("week")} sx={{ mx: 1 }}>This Week</Button>
+        <Button variant="contained" onClick={() => setFilter("month")}>This Month</Button>
+      </Box>
       <Grid container spacing={3}>
-        {appointments.map((appointment) => {
+        {filteredAppointments.map((appointment) => {
           const appointmentDate = new Date(appointment.appointmentTime);
           const date = appointmentDate.toLocaleDateString();
           const time = appointmentDate.toLocaleTimeString();
