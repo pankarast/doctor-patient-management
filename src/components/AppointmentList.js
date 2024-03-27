@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from './AuthContext'; 
+import React, { useState, useEffect } from "react";
+import { useAuth } from "./AuthContext";
 import {
   Grid,
   Card,
@@ -53,19 +53,41 @@ function AppointmentList() {
     const fetchAppointments = async () => {
       if (!userId) return; // Do not fetch if userId is not available
       try {
-        const response = await fetch(`http://localhost:8080/appointments/patient/${userId}`);
+        const response = await fetch(
+          `http://localhost:8080/appointments/patient/${userId}`
+        );
         if (!response.ok) {
-          throw new Error('Failed to fetch appointments');
+          throw new Error("Failed to fetch appointments");
         }
         const data = await response.json();
         setAppointments(data);
       } catch (error) {
-        console.error('Failed to fetch appointments:', error);
+        console.error("Failed to fetch appointments:", error);
       }
     };
 
     fetchAppointments();
   }, [userId]); // Fetch appointments whenever userId changes
+
+  const deleteAppointment = async (appointmentId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/appointments/${appointmentId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete appointment");
+      }
+      // Remove the appointment from the local state to update UI
+      setAppointments(
+        appointments.filter((appointment) => appointment.id !== appointmentId)
+      );
+    } catch (error) {
+      console.error("Failed to delete appointment:", error);
+    }
+  };
 
   return (
     <Box sx={{ mt: 4 }}>
@@ -84,8 +106,17 @@ function AppointmentList() {
                   </TitleTypography>
                   <ContactTypography>Date: {date}</ContactTypography>
                   <ContactTypography>Time: {time}</ContactTypography>
-                  <ContactTypography>Reason: {appointment.reason}</ContactTypography>
-                  <Button variant="contained" color="error" sx={{ mt: 2 }}>Cancel</Button>
+                  <ContactTypography>
+                    Reason: {appointment.reason}
+                  </ContactTypography>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    sx={{ mt: 2 }}
+                    onClick={() => deleteAppointment(appointment.id)}
+                  >
+                    Cancel
+                  </Button>
                 </CustomCardContent>
               </CustomCard>
             </Grid>
