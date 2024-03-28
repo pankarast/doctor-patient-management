@@ -16,30 +16,31 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(loggedInStatus);
   }, []);
 
-  const login = async (amka, password) => {
+  const login = async (amka, password, userType) => {
+    const endpoint = userType === 'doctor' ? 'doctors/login' : 'patients/login';
     try {
-        const response = await fetch('http://localhost:8080/patients/login', {
+        const response = await fetch(`http://localhost:8080/${endpoint}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ socialSecurityNumber: amka, password }),
         });
-
+  
         if (response.ok) {
             const data = await response.json();
-            // Assuming the response includes a "user" object with the user details
             sessionStorage.setItem('isLoggedIn', 'true');
-            sessionStorage.setItem('userId', data.user.id); // Store the user ID
+            sessionStorage.setItem('userId', data.user.id);
             setIsLoggedIn(true);
-            setUserId(data.user.id); // Update state with the user ID
+            setUserId(data.user.id);
         } else {
             console.error('Login failed with status:', response.status);
         }
     } catch (error) {
         console.error('Login request failed with error:', error);
     }
-};
+  };
+  
 
 
 
