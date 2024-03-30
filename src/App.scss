@@ -1,5 +1,6 @@
 @import "./tokens.scss";
 
+
 .App {
   --primaryTheme: var(--primaryThemeColor, #{$primaryLight});
   --secondaryTheme: var(--secondaryThemeColor, #{$secondaryLight});

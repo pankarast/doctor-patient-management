@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
 
   const [userId, setUserId] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userType, setUserType] = useState(sessionStorage.getItem('userType'));
 
   useEffect(() => {
     const loggedInStatus = sessionStorage.getItem('isLoggedIn') === 'true';
@@ -31,8 +32,10 @@ export const AuthProvider = ({ children }) => {
             const data = await response.json();
             sessionStorage.setItem('isLoggedIn', 'true');
             sessionStorage.setItem('userId', data.user.id);
+            sessionStorage.setItem('userType', userType);
             setIsLoggedIn(true);
             setUserId(data.user.id);
+            setUserType(userType);
         } else {
             console.error('Login failed with status:', response.status);
         }
@@ -49,11 +52,14 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
     sessionStorage.removeItem('userId');
     setUserId(null);
+    sessionStorage.removeItem('userType');
+    setUserType(null);
   };
 
   const value = {
     isLoggedIn,
     userId,
+    userType,
     login,
     logout,
   };

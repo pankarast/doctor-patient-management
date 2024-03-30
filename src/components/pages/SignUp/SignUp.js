@@ -1,4 +1,10 @@
 import React, { useState } from "react";
+// import 'leaflet/dist/leaflet.css';
+import {
+  GoogleMap,
+  LoadScript,
+  Marker
+} from '@react-google-maps/api';
 import {
   Avatar,
   Button,
@@ -22,7 +28,17 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from  '@mui/x-date-pickers/TimePicker';
 import Dayjs from 'dayjs';
+import AddressInput from '../../Address/AddressInput';
+// import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
+
+const containerStyle = {
+  width: '100%',
+  height: '400px'
+};
+
+// Be sure to replace 'YOUR_API_KEY_HERE' with your actual Google Maps API key
+const googleMapsApiKey = 'AIzaSyCCF695YKHRUe3Vc09908DFyqBh_yGOzlw';
 
 
 
@@ -52,23 +68,19 @@ export default function SignUp() {
     fridayEnd: defaultEndTime,
 
   });
+  
 
-  const convertTo24HourFormat = (time12h) => {
-      if (!time12h) return null; // Guard against null input
-      const [time, modifier] = time12h.split(' ');
-      let [hours] = time.split(':'); // Ignore minutes, assume '00'
-      
-      if (hours === '12') {
-        hours = '00';
-      }
-      if (modifier === 'PM') {
-        hours = (parseInt(hours, 10) + 12).toString();
-      }
-      
-      return `${hours.padStart(2, '0')}:00`; // Pad hours to ensure two digits and append ':00' for minutes
-    };
+  const [selectedLocation, setSelectedLocation] = useState({
+    formattedAddress: '',
+    lat: null,
+    lng: null,
+  });
 
-
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location);
+    // Now `selectedLocation` state contains the selected address and its lat, lng
+    console.log(location);
+  };
 
   const handleUserTypeChange = (event) => {
     setUserType(event.target.value);
@@ -81,46 +93,39 @@ export default function SignUp() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    
+
     const data = new FormData(event.currentTarget);
 
-    const workingHours = [
-      {
-        dayOfWeek: "MONDAY",
-        startTime: convertTo24HourFormat(data.get("mondayStart")),
-        endTime: convertTo24HourFormat(data.get("mondayEnd")),
-      },
-      {
-        dayOfWeek: "TUESDAY",
-        startTime: convertTo24HourFormat(data.get("tuesdayStart")),
-        endTime: convertTo24HourFormat(data.get("tuesdayEnd")),
-      },
-      {
-        dayOfWeek: "WEDNESDAY",
-        startTime: convertTo24HourFormat(data.get("wednesdayStart")),
-        endTime: convertTo24HourFormat(data.get("wednesdayEnd")),
-      },
-      {
-        dayOfWeek: "THURSDAY",
-        startTime: convertTo24HourFormat(data.get("thursdayStart")),
-        endTime: convertTo24HourFormat(data.get("thursdayEnd")),
-      },
-      {
-        dayOfWeek: "FRIDAY",
-        startTime: convertTo24HourFormat(data.get("fridayStart")),
-        endTime: convertTo24HourFormat(data.get("fridayEnd")),
-      },
-    ];
+    // Convert Dayjs objects to strings in the required format
+    const formattedWorkingHours = Object.keys(workingHours).reduce((acc, key) => {
+      const day = key.replace(/Start|End/, ''); // Extract day part (e.g., "monday")
+      const startOrEnd = key.endsWith('Start') ? 'startTime' : 'endTime'; // Determine if it's start or end time
+      const timeString = workingHours[key].format('HH:mm'); // Format Dayjs object to string
+      
+      // Initialize the day object if it doesn't exist
+      if (!acc[day]) acc[day] = { dayOfWeek: day.toUpperCase() };
+      // Set start or end time
+      acc[day][startOrEnd] = timeString;
 
-    
+      return acc;
+    }, {});
+
+    const workingHoursArray = Object.values(formattedWorkingHours);
+
     const formData =
       userType === "doctor"
         ? {
             socialSecurityNumber: data.get("socialSecurityNumber"),
             name: data.get("name"),
+            password: data.get("password"),
             specialty: data.get("specialty"),
             contactDetails: data.get("contactDetails"),
             area: data.get("area"),
-            workingHours,
+            workingHours: workingHoursArray,
+            formattedAddress: selectedLocation.formattedAddress,
+            longitude: selectedLocation.lng,
+            latitude: selectedLocation.lat,
           }
         : {
             // Patient specific form data
@@ -176,9 +181,37 @@ export default function SignUp() {
                   <Grid item xs={12} sm={6}> {/* Doctor details column */}
                     <TextField fullWidth label="Social Security Number" name="socialSecurityNumber" required sx={{ mb: 2 }} />
                     <TextField fullWidth label="Name" name="name" required sx={{ mb: 2 }} />
+                    <TextField fullWidth id="password" label="Password" name="password" type="password" required sx={{ mb: 2 }}/>
                     <TextField fullWidth label="Specialty" name="specialty" required sx={{ mb: 2 }} />
                     <TextField fullWidth label="Contact Details" name="contactDetails" required sx={{ mb: 2 }} />
                     <TextField fullWidth label="Area" name="area" required sx={{ mb: 2 }} />
+                    <div>
+                      <AddressInput onLocationSelect={handleLocationSelect} />
+                      {/* {selectedLocation.lat && selectedLocation.lng && (
+                        <div style={{ height: '400px', width: '100%' }}>
+                          <MapContainer center={[selectedLocation.lat, selectedLocation.lng]} zoom={13} style={{ height: '100%', width: '100%' }}>
+                            <TileLayer
+                              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            />
+                            <Marker position={[selectedLocation.lat, selectedLocation.lng]}>
+                              <Popup>{selectedLocation.formattedAddress}</Popup>
+                            </Marker>
+                          </MapContainer>
+                        </div>
+                      )} */}
+                      {selectedLocation.lat && selectedLocation.lng && (
+                        <>
+                          <GoogleMap
+                            mapContainerStyle={containerStyle}
+                            center={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
+                            zoom={13}
+                          >
+                            <Marker position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }} />
+                          </GoogleMap>
+                        </>
+                      )}
+                    </div>
                   </Grid>
                   <Grid item xs={12} sm={6}> {/* Working hours column */}
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -299,24 +332,19 @@ export default function SignUp() {
                     required
                     sx={{ mb: 2 }}
                   />
-                  <TextField
-                    fullWidth
-                    label="Specialty"
-                    name="specialty"
-                    required
-                    sx={{ mb: 2 }}
+                  <TextField                  
+                  fullWidth
+                  id="password"
+                  label="Password"
+                  name="password"
+                  type="password"
+                  required
+                  sx={{ mb: 2 }}
                   />
                   <TextField
                     fullWidth
                     label="Contact Details"
                     name="contactDetails"
-                    required
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Area"
-                    name="area"
                     required
                     sx={{ mb: 2 }}
                   />
@@ -326,7 +354,7 @@ export default function SignUp() {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 2, mb: 2 }}
             >
               Sign Up
             </Button>

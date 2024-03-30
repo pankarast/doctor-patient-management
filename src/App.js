@@ -7,6 +7,8 @@ import NavigationBar from "./components/Navigation/NavigationBar";
 import AppRoutes from "./components/Routes/AppRoutes";
 import { useAuth } from './components/AuthContext'; 
 
+import { LoadScript } from '@react-google-maps/api';
+
 function App() {
   const [navBarTitle, setNavBarTitle] = useState("");
   const [themeState, setThemeState] = useState(true);
@@ -20,7 +22,10 @@ function App() {
   }, [isLoggedIn]); // Depend on isLoggedIn to trigger this effect
 
   return (
-    <>
+    <LoadScript
+      googleMapsApiKey='AIzaSyCCF695YKHRUe3Vc09908DFyqBh_yGOzlw' // Make sure to replace with your actual API key
+      libraries={["places"]}
+    >
       <BrowserRouter>
         <div id="App" className={`App ${themeState ? 'darkMode' : ''}`}>
           <NavigationBar title={navBarTitle} setThemeState={setThemeState}/>
@@ -32,7 +37,7 @@ function App() {
           </div>
         </div>
       </BrowserRouter>
-    </>
+    </LoadScript>
   );
 }
 
