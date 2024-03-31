@@ -32,14 +32,6 @@ import AddressInput from '../../Address/AddressInput';
 // import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 
-const containerStyle = {
-  width: '100%',
-  height: '400px'
-};
-
-// Be sure to replace 'YOUR_API_KEY_HERE' with your actual Google Maps API key
-const googleMapsApiKey = 'AIzaSyCCF695YKHRUe3Vc09908DFyqBh_yGOzlw';
-
 
 
 // TODO remove, this demo shouldn't need to reset the theme.
@@ -68,6 +60,8 @@ export default function SignUp() {
     fridayEnd: defaultEndTime,
 
   });
+
+  const [area, setArea] = useState('');
   
 
   const [selectedLocation, setSelectedLocation] = useState({
@@ -77,10 +71,29 @@ export default function SignUp() {
   });
 
   const handleLocationSelect = (location) => {
+    // Keep the selected location in its original format, without modifying it
     setSelectedLocation(location);
-    // Now `selectedLocation` state contains the selected address and its lat, lng
-    console.log(location);
+  
+    // Split the formatted address to extract parts
+    const addressParts = location.formattedAddress.split(', ');
+  
+    if (addressParts.length > 1) {
+      // Extract the part that likely contains "City ZIP"
+      const cityZipPart = addressParts[1];
+      
+      // Use a regex to match everything up to the first sequence of digits (the ZIP code)
+      const match = cityZipPart.match(/^(.*?)(?=\d)/);
+  
+      if (match && match[0]) {
+        // If a match is found, trim it to remove any leading/trailing whitespace
+        setArea(match[0].trim()); // Update the area state with the extracted city name
+      } else {
+        // If no digits are found, assume the entire part is the city name
+        setArea(cityZipPart.trim());
+      }
+    }
   };
+  
 
   const handleUserTypeChange = (event) => {
     setUserType(event.target.value);
@@ -121,7 +134,7 @@ export default function SignUp() {
             password: data.get("password"),
             specialty: data.get("specialty"),
             contactDetails: data.get("contactDetails"),
-            area: data.get("area"),
+            area: area,
             workingHours: workingHoursArray,
             formattedAddress: selectedLocation.formattedAddress,
             longitude: selectedLocation.lng,
@@ -184,7 +197,7 @@ export default function SignUp() {
                     <TextField fullWidth id="password" label="Password" name="password" type="password" required sx={{ mb: 2 }}/>
                     <TextField fullWidth label="Specialty" name="specialty" required sx={{ mb: 2 }} />
                     <TextField fullWidth label="Contact Details" name="contactDetails" required sx={{ mb: 2 }} />
-                    <TextField fullWidth label="Area" name="area" required sx={{ mb: 2 }} />
+                    {/* <TextField fullWidth label="Area" name="area" required sx={{ mb: 2 }} /> */}
                     <div>
                       <AddressInput onLocationSelect={handleLocationSelect} />
                       {/* {selectedLocation.lat && selectedLocation.lng && (
@@ -200,17 +213,6 @@ export default function SignUp() {
                           </MapContainer>
                         </div>
                       )} */}
-                      {selectedLocation.lat && selectedLocation.lng && (
-                        <>
-                          <GoogleMap
-                            mapContainerStyle={containerStyle}
-                            center={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
-                            zoom={13}
-                          >
-                            <Marker position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }} />
-                          </GoogleMap>
-                        </>
-                      )}
                     </div>
                   </Grid>
                   <Grid item xs={12} sm={6}> {/* Working hours column */}

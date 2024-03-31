@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
 
 const CustomCard = styled(Card)(({ theme }) => ({
   maxWidth: 345, // Adjust card size
@@ -43,12 +44,29 @@ const SpecialtyTypography = styled(Typography)(({ theme }) => ({
 const ContactTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
 }));
+
+const containerStyle = {
+  width: '100%',
+  height: '400px',
+};
+
 function DoctorsList() {
   const [doctors, setDoctors] = useState([]);
   const [specialty, setSpecialty] = useState("");
   const [area, setArea] = useState("");
   const [searchPerformed, setSearchPerformed] = useState(false); // New state to control rendering
   const navigate = useNavigate();
+
+  const [activeMarker, setActiveMarker] = useState(null); // Track which marker is active
+
+  const mapCenter = {
+    lat: 37.9838, // Default center, you may want to dynamically adjust this based on the doctors' locations
+    lng: 23.7275,
+  };
+
+  const handleMarkerClick = (doctorId) => {
+    setActiveMarker(doctorId); // Set the active marker to the doctor's ID
+  };
 
   const fetchDoctors = () => {
     const url = new URL("http://localhost:8080/doctors");
@@ -98,8 +116,8 @@ function DoctorsList() {
           onChange={(e) => setArea(e.target.value)}
           label="Area"
         >
-          <MenuItem value={"Athens"}>Athens</MenuItem>
-          <MenuItem value={"Thessaloniki"}>Thessaloniki</MenuItem>
+          <MenuItem value={"Athina"}>Athina</MenuItem>
+          <MenuItem value={"Nea Smirni"}>Nea Smirni</MenuItem>
         </Select>
       </FormControl>
       <Button variant="contained" onClick={handleSearchClick}>
@@ -125,6 +143,7 @@ function DoctorsList() {
                       Number: {doctor.contactDetails}
                     </ContactTypography>
                     <ContactTypography>Area: {doctor.area}</ContactTypography>
+                    <ContactTypography>Address: {doctor.formattedAddress}</ContactTypography>
                     <Button
                       variant="contained"
                       onClick={() => handleAppointmentClick(doctor.id)}
@@ -138,6 +157,36 @@ function DoctorsList() {
           </Grid>
         </Box>
       )}
+
+      {/* Conditionally Render Google Map displaying doctors */}
+      {searchPerformed && (
+              <Box sx={{ mt: 4, mb: 4 }}>
+                <GoogleMap
+                  mapContainerStyle={containerStyle}
+                  center={mapCenter}
+                  zoom={13}
+                >
+                  {doctors.map((doctor) => (
+                    <Marker
+                      key={doctor.id}
+                      position={{ lat: doctor.latitude, lng: doctor.longitude }}
+                      onClick={() => handleMarkerClick(doctor.id)}
+                    >
+                      {activeMarker === doctor.id && (
+                        <InfoWindow onCloseClick={() => setActiveMarker(null)}>
+                          <div>
+                            <h2>{doctor.name}</h2>
+                            <p>Specialty: {doctor.specialty}</p>
+                            <p>Address: {doctor.formattedAddress}</p>
+                            {/* You can include any additional details here */}
+                          </div>
+                        </InfoWindow>
+                      )}
+                    </Marker>
+                  ))}
+                </GoogleMap>
+              </Box>
+            )}
     </Box>
   );
 }

@@ -30,6 +30,7 @@ const AddressInput = ({ onLocationSelect }) => {
       >
         <TextField
           fullWidth
+          required
           label="Address"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
