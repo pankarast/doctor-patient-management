@@ -49,6 +49,7 @@ function AppointmentList() {
   const { userId } = useAuth();
   const [filter, setFilter] = useState("all"); // Possible values: "all", "week", "month"
   const [filteredAppointments, setFilteredAppointments] = useState([]);
+  const {userType} =useAuth();
 
   useEffect(() => {
     const filtered = appointments.filter(appointment => {
@@ -78,7 +79,7 @@ function AppointmentList() {
       if (!userId) return; // Do not fetch if userId is not available
       try {
         const response = await fetch(
-          `http://localhost:8080/appointments/patient/${userId}`
+          `http://localhost:8080/appointments/${userType}/${userId}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch appointments");
