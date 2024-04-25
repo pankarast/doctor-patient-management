@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { TextField, Paper, List, ListItem } from '@mui/material';
+import React, { useState } from 'react';
+import { TextField } from '@mui/material';
 import { Autocomplete } from '@react-google-maps/api';
 
 const AddressInput = ({ onLocationSelect }) => {
@@ -43,90 +43,3 @@ const AddressInput = ({ onLocationSelect }) => {
 };
 
 export default AddressInput;
-
-
-
-
-
-
-
-
-// import React, { useState, useEffect } from 'react';
-// import { TextField, List, ListItem, Paper } from '@mui/material';
-
-// const AddressInput = ({ onLocationSelect }) => {
-//   const [query, setQuery] = useState('');
-//   const [suggestions, setSuggestions] = useState([]);
-
-//   useEffect(() => {
-//     if (query.length < 3) {
-//       setSuggestions([]);
-//       return;
-//     }
-
-//     const fetchSuggestions = async () => {
-//       const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${query}`);
-//       const data = await response.json();
-//       setSuggestions(data);
-//     };
-
-//     const delayDebounceFn = setTimeout(() => {
-//       fetchSuggestions();
-//     }, 500); // Adding a 500ms debounce to limit requests
-
-//     return () => clearTimeout(delayDebounceFn);
-//   }, [query]);
-
-//   const handleSelect = (place) => {
-//     setQuery(place.display_name);
-//     setSuggestions([]);
-//     // Call a function passed as prop to update parent component state
-//     const formattedAddress = formatAddress(place); // Assuming you write this function
-//   onLocationSelect({
-//     formattedAddress,
-//     lat: parseFloat(place.lat),
-//     lng: parseFloat(place.lon),
-//   });
-// };
-
-// // Mockup function to format address based on the provided place object.
-// // You will need to adjust the keys based on the actual structure of the place object.
-// function formatAddress(place) {
-//   const { address } = place;
-//   const line1 = address.name || ''; // RECIPIENT OR CONTACT NAME
-//   const line2 = `${address.road || ''} ${address.house_number || ''}`.trim(); // STREET HOUSE NUMBER
-//   const line3 = `${address.postcode || ''} ${address.city || address.town || ''}`.trim(); // POSTAL CODE CITY
-//   const line4 = address.country || ''; // COUNTRY
-//   return `${line1}\n${line2}\n${line3}\n${line4}`;
-// }
-
-//   return (
-//     <div style={{ position: 'relative', width: '100%' }}>
-//       <TextField
-//         fullWidth
-//         label="Address"
-//         value={query}
-//         onChange={(e) => setQuery(e.target.value)}
-//         variant="outlined"
-//         margin="normal"
-//       />
-//       {suggestions.length > 0 && (
-//         <Paper style={{ position: 'absolute', width: '100%', zIndex: 1 }}>
-//           <List>
-//             {suggestions.map((place, index) => (
-//               <ListItem
-//                 key={index}
-//                 onClick={() => handleSelect(place)}
-//                 style={{ cursor: 'pointer' }}
-//               >
-//                 {place.display_name}
-//               </ListItem>
-//             ))}
-//           </List>
-//         </Paper>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default AddressInput;

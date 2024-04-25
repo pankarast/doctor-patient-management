@@ -1,7 +1,6 @@
 import "./App.scss";
 import React, { useState, useEffect } from "react";
 import {BrowserRouter} from "react-router-dom";
-
 import SideBar from "./components/SideBar/SideBar"
 import NavigationBar from "./components/Navigation/NavigationBar";
 import AppRoutes from "./components/Routes/AppRoutes";

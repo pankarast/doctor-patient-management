@@ -1,10 +1,4 @@
 import React, { useState } from "react";
-// import 'leaflet/dist/leaflet.css';
-import {
-  GoogleMap,
-  LoadScript,
-  Marker
-} from '@react-google-maps/api';
 import {
   Avatar,
   Button,
@@ -23,23 +17,15 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../AuthContext";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from  '@mui/x-date-pickers/TimePicker';
 import Dayjs from 'dayjs';
 import AddressInput from '../../Address/AddressInput';
-// import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-
-
-
-
-// TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-  const { login } = useAuth(); // Use the login function from context
 
   const navigate = useNavigate(); // Hook to navigate
 
@@ -105,8 +91,6 @@ export default function SignUp() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    
 
     const data = new FormData(event.currentTarget);
 
@@ -197,28 +181,13 @@ export default function SignUp() {
                     <TextField fullWidth id="password" label="Password" name="password" type="password" required sx={{ mb: 2 }}/>
                     <TextField fullWidth label="Specialty" name="specialty" required sx={{ mb: 2 }} />
                     <TextField fullWidth label="Contact Details" name="contactDetails" required sx={{ mb: 2 }} />
-                    {/* <TextField fullWidth label="Area" name="area" required sx={{ mb: 2 }} /> */}
                     <div>
                       <AddressInput onLocationSelect={handleLocationSelect} />
-                      {/* {selectedLocation.lat && selectedLocation.lng && (
-                        <div style={{ height: '400px', width: '100%' }}>
-                          <MapContainer center={[selectedLocation.lat, selectedLocation.lng]} zoom={13} style={{ height: '100%', width: '100%' }}>
-                            <TileLayer
-                              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            />
-                            <Marker position={[selectedLocation.lat, selectedLocation.lng]}>
-                              <Popup>{selectedLocation.formattedAddress}</Popup>
-                            </Marker>
-                          </MapContainer>
-                        </div>
-                      )} */}
                     </div>
                   </Grid>
-                  <Grid item xs={12} sm={6}> {/* Working hours column */}
+                  <Grid item xs={12} sm={6}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <Grid container spacing={2}> {/* Main container for working hours */}
-                        {/* First column for Monday to Wednesday */}
+                      <Grid container spacing={2}> 
                         <Grid item xs={12} md={12}>
                           <Grid container spacing={2}>
                             <Grid item xs={6}>
@@ -273,7 +242,6 @@ export default function SignUp() {
                           </Grid>
                         </Grid>
 
-                        {/* Second column for Thursday to Friday */}
                         <Grid item xs={12} md={12}>
                           <Grid container spacing={2}>
                             <Grid item xs={6}>

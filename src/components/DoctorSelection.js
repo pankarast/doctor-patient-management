@@ -46,7 +46,7 @@ const DoctorSelection = () => {
             name="area"
           >
             {/* Map through areas */}
-            <MenuItem value="Athens">Athens</MenuItem>
+            <MenuItem value="Athens">Athina</MenuItem>
             <MenuItem value="Thessaloniki">Thessaloniki</MenuItem>
             {/* Add more areas */}
           </Select>

@@ -6,14 +6,9 @@ import {
   CardContent,
   Typography,
   Box,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Button,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
 
 const CustomCard = styled(Card)(({ theme }) => ({
   maxWidth: 345, // Adjust card size
@@ -34,10 +29,6 @@ const CustomCardContent = styled(CardContent)(({ theme }) => ({
 
 const TitleTypography = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
-}));
-
-const SpecialtyTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.secondary,
 }));
 
 const ContactTypography = styled(Typography)(({ theme }) => ({
