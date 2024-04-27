@@ -37,10 +37,9 @@ const ContactTypography = styled(Typography)(({ theme }) => ({
 
 function AppointmentList() {
   const [appointments, setAppointments] = useState([]);
-  const { userId } = useAuth();
+  const { userId, userType } = useAuth();
   const [filter, setFilter] = useState("all"); // Possible values: "all", "week", "month"
   const [filteredAppointments, setFilteredAppointments] = useState([]);
-  const {userType} =useAuth();
 
   useEffect(() => {
     const filtered = appointments.filter(appointment => {
@@ -76,6 +75,7 @@ function AppointmentList() {
           throw new Error("Failed to fetch appointments");
         }
         const data = await response.json();
+        console.log(data)
         setAppointments(data);
       } catch (error) {
         console.error("Failed to fetch appointments:", error);
@@ -123,7 +123,7 @@ function AppointmentList() {
               <CustomCard elevation={10}>
                 <CustomCardContent>
                   <TitleTypography variant="h5">
-                    Appointment ID: {appointment.id}
+                  {userType === "doctor" ? appointment.patientName : appointment.doctorName}
                   </TitleTypography>
                   <ContactTypography>Date: {date}</ContactTypography>
                   <ContactTypography>Time: {time}</ContactTypography>
