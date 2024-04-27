@@ -9,7 +9,7 @@ import { useAuth } from '../../components/AuthContext';
 function Container({ children }) {
   const [nav, setNav] = useState(true);
   // Extracting logout and userType from the context
-  const { logout, userType } = useAuth();
+  const { logout, userType, userName } = useAuth();
 
   const Change = () => {
     setNav((prevNav) => !prevNav);
@@ -30,7 +30,7 @@ function Container({ children }) {
                 <div className="menuIcon">
                   <BiSolidUserCircle />
                 </div>
-                <h3> Username </h3>
+                <h3> {userName} </h3>
               </div>
             </NavLink>
             <NavLink
