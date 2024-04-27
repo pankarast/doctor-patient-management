@@ -14,6 +14,7 @@ function AppointmentBooking() {
     const [availableHours, setAvailableHours] = useState([]);
     const [doctor, setDoctor] = useState({ name: '', specialty: '', area: '' });
     const { userId } = useAuth();
+    const [reason, setReason] = useState('');
 
     useEffect(() => {
         const fetchDoctorDetails = async () => {
@@ -52,7 +53,7 @@ function AppointmentBooking() {
             doctorId: parseInt(doctorId, 10), // Ensure doctorId is sent as an integer
             patientId: userId, // Replace with the actual patient ID (logged-in user's ID, for example)
             appointmentTime: `${selectedDate.format('YYYY-MM-DD')}T${selectedTime}`,
-            reason: "Routine Checkup", // This could also be dynamic based on user input
+            reason: reason, // This could also be dynamic based on user input
         };
     
         try {
@@ -74,6 +75,7 @@ function AppointmentBooking() {
             // Reset selectedDate, selectedTime, and availableHours
             setSelectedDate(null);
             setSelectedTime('');
+            setReason(''); // Reset the reason field
             setAvailableHours([]);
         } catch (error) {
             console.error('Error booking appointment:', error);
@@ -109,13 +111,23 @@ function AppointmentBooking() {
                                         <MenuItem key={index} value={hour}>{hour}</MenuItem>
                                     ))}
                                 </Select>
+                                <TextField
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id="reason"
+                                    label="reason"
+                                    name="reason"
+                                    onChange={(e) => setReason(e.target.value)} // Handle the change
+                                    autoFocus
+                                />
                             </FormControl>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 style={{ marginTop: '20px' }}
                                 onClick={handleSubmitAppointment}
-                                disabled={!selectedTime || !selectedDate} // Ensure a date and time are selected
+                                disabled={!selectedTime || !selectedDate || !reason} // Ensure a date and time are selected
                             >
                                 Confirm Appointment
                             </Button>
