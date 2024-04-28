@@ -42,27 +42,30 @@ function AppointmentList() {
   const [filteredAppointments, setFilteredAppointments] = useState([]);
 
   useEffect(() => {
-    const filtered = appointments.filter(appointment => {
-        const appointmentDate = new Date(appointment.appointmentTime);
-        const now = new Date();
-        const startOfWeek = now.getDate() - now.getDay();
-        const endOfWeek = startOfWeek + 6;
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const filtered = appointments.filter((appointment) => {
+      const appointmentDate = new Date(appointment.appointmentTime);
+      const now = new Date();
+      const startOfWeek = now.getDate() - now.getDay();
+      const endOfWeek = startOfWeek + 6;
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-        switch (filter) {
-            case "week":
-                return appointmentDate >= new Date(now.setDate(startOfWeek)) && appointmentDate <= new Date(now.setDate(endOfWeek));
-            case "month":
-                return appointmentDate >= startOfMonth && appointmentDate <= endOfMonth;
-            default:
-                return true;
-        }
+      switch (filter) {
+        case "week":
+          return (
+            appointmentDate >= new Date(now.setDate(startOfWeek)) &&
+            appointmentDate <= new Date(now.setDate(endOfWeek))
+          );
+        case "month":
+          return (
+            appointmentDate >= startOfMonth && appointmentDate <= endOfMonth
+          );
+        default:
+          return true;
+      }
     });
     setFilteredAppointments(filtered);
-}, [appointments, filter]);
-
-
+  }, [appointments, filter]);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -75,7 +78,7 @@ function AppointmentList() {
           throw new Error("Failed to fetch appointments");
         }
         const data = await response.json();
-        console.log(data)
+        console.log(data);
         setAppointments(data);
       } catch (error) {
         console.error("Failed to fetch appointments:", error);
@@ -108,9 +111,19 @@ function AppointmentList() {
   return (
     <Box sx={{ mt: 4 }}>
       <Box sx={{ mb: 2 }}>
-        <Button variant="contained" onClick={() => setFilter("all")}>All</Button>
-        <Button variant="contained" onClick={() => setFilter("week")} sx={{ mx: 1 }}>This Week</Button>
-        <Button variant="contained" onClick={() => setFilter("month")}>This Month</Button>
+        <Button variant="contained" onClick={() => setFilter("all")}>
+          All
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => setFilter("week")}
+          sx={{ mx: 1 }}
+        >
+          This Week
+        </Button>
+        <Button variant="contained" onClick={() => setFilter("month")}>
+          This Month
+        </Button>
       </Box>
       <Grid container spacing={3}>
         {filteredAppointments.map((appointment) => {
@@ -123,7 +136,9 @@ function AppointmentList() {
               <CustomCard elevation={10}>
                 <CustomCardContent>
                   <TitleTypography variant="h5">
-                  {userType === "doctor" ? appointment.patientName : appointment.doctorName}
+                    {userType === "doctor"
+                      ? appointment.patientName
+                      : appointment.doctorName}
                   </TitleTypography>
                   <ContactTypography>Date: {date}</ContactTypography>
                   <ContactTypography>Time: {time}</ContactTypography>

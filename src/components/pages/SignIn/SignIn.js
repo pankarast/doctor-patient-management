@@ -1,6 +1,5 @@
-import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -18,19 +17,48 @@ import { Select, MenuItem, FormControl } from "@mui/material";
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const navigate = useNavigate(); // Hook to navigate
-  const { login } = useAuth(); // Use the login function from context
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [userType, setUserType] = useState("patient");
+  const [amka, setAmka] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState({ amka: "", password: "" });
+
+  useEffect(() => {
+    // Clear errors when userType changes
+    setError({});
+  }, [userType]);
 
   const handleUserTypeChange = (event) => {
     setUserType(event.target.value);
   };
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    if (name === "amka") {
+      setAmka(value);
+      if (value) setError((prev) => ({ ...prev, amka: "" }));
+    } else if (name === "password") {
+      setPassword(value);
+      if (value) setError((prev) => ({ ...prev, password: "" }));
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const amka = data.get("amka");
-    const password = data.get("password");
+    let hasError = false;
+
+    if (!amka) {
+      setError((prev) => ({ ...prev, amka: "AMKA is required" }));
+      hasError = true;
+    }
+    if (!password) {
+      setError((prev) => ({ ...prev, password: "Password is required" }));
+      hasError = true;
+    }
+
+    if (hasError) return;
+
     try {
       await login(amka, password, userType);
       navigate("/");
@@ -43,7 +71,6 @@ export default function SignIn() {
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-
         <Box
           sx={{
             marginTop: 8,
@@ -71,9 +98,9 @@ export default function SignIn() {
           </FormControl>
           <Box
             component="form"
-            onSubmit={handleSubmit}
             noValidate
             sx={{ mt: 1 }}
+            onSubmit={handleSubmit}
           >
             <TextField
               margin="normal"
@@ -83,6 +110,10 @@ export default function SignIn() {
               label="AMKA"
               name="amka"
               autoFocus
+              value={amka}
+              onChange={handleChange}
+              error={!!error.amka}
+              helperText={error.amka}
             />
             <TextField
               margin="normal"
@@ -93,6 +124,10 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={password}
+              onChange={handleChange}
+              error={!!error.password}
+              helperText={error.password}
             />
             <Button
               type="submit"

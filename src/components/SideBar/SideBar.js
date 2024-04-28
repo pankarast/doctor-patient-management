@@ -4,7 +4,7 @@ import "./SideBar.scss";
 import { MdLogout, MdOutlinePersonSearch } from "react-icons/md";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { BiSolidUserCircle } from "react-icons/bi";
-import { useAuth } from '../../components/AuthContext';
+import { useAuth } from "../../components/AuthContext";
 
 function Container({ children }) {
   const [nav, setNav] = useState(true);
@@ -42,7 +42,7 @@ function Container({ children }) {
               <div
                 className="menuItemWrap"
                 onClick={() => logout()} // Call logout when this element is clicked
-                style={{ cursor: 'pointer' }} // Make it look clickable
+                style={{ cursor: "pointer" }} // Make it look clickable
               >
                 <div className="menuItemAcc" id="philosophy">
                   <div className="menuIcon">
@@ -77,7 +77,11 @@ function Container({ children }) {
 
           {/* Conditional rendering based on userType */}
           {userType === "patient" && (
-            <NavLink activeclassname="active" to="/doctor-list" className="menuItemWrap">
+            <NavLink
+              activeclassname="active"
+              to="/doctor-list"
+              className="menuItemWrap"
+            >
               <div className="menuItemAcc" id="mission">
                 <div className="menuIcon">
                   <MdOutlinePersonSearch />
