@@ -13,6 +13,8 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -26,6 +28,23 @@ import AddressInput from "../../Address/AddressInput";
 const defaultTheme = createTheme();
 
 export default function SignUp() {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarInfo, setSnackbarInfo] = useState({
+    message: "",
+    severity: "error", // can be "error", "success", "info", or "warning"
+  });
+  const handleSnackbarOpen = (message, severity) => {
+    setSnackbarInfo({ message, severity });
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
   const navigate = useNavigate();
   const [userType, setUserType] = useState("patient");
   const defaultStartTime = Dayjs().hour(9).minute(0);
@@ -139,7 +158,10 @@ export default function SignUp() {
     const data = new FormData(event.currentTarget);
 
     if (!validateFields(data)) {
-      console.error("Validation errors:", errors);
+      handleSnackbarOpen(
+        "Validation failed. Please check the form fields.",
+        "error"
+      );
       return;
     }
 
@@ -201,11 +223,17 @@ export default function SignUp() {
         navigate("/");
       } else {
         // Handle unsuccessful response
-        console.error("Form submission failed:", response.statusText);
+        handleSnackbarOpen(
+          `Form submission failed: ${response.statusText}`,
+          "error"
+        );
       }
     } catch (error) {
       // Handle network error
-      console.error("Error submitting form data:", error);
+      handleSnackbarOpen(
+        `Error submitting form data: ${error.message}`,
+        "error"
+      );
     }
   };
 
@@ -390,6 +418,20 @@ export default function SignUp() {
             >
               Sign Up
             </Button>
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={3000}
+              onClose={handleSnackbarClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+              <Alert
+                onClose={handleSnackbarClose}
+                severity={snackbarInfo.severity}
+                sx={{ width: "100%" }}
+              >
+                {snackbarInfo.message}
+              </Alert>
+            </Snackbar>
             <Grid container justifyContent="flex-end">
               <Grid item xs={12}>
                 <Link component={RouterLink} to="/sign-in" variant="body2">
