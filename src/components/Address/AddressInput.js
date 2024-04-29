@@ -18,11 +18,7 @@ const AddressInput = ({ onLocationSelect, error, helperText, resetInput  }) => {
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
         });
-      } else {
-        console.error("No valid place information found.");
-      }
-    } else {
-      console.log("Autocomplete is not loaded yet!");
+      } 
     }
   };
 

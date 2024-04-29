@@ -17,8 +17,6 @@ const DoctorSelection = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(selection);
-    // Fetch doctors based on the selection
   };
 
   return (

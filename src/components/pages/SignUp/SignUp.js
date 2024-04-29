@@ -96,7 +96,6 @@ export default function SignUp() {
         : ["socialSecurityNumber", "name", "password", "contactDetails"];
 
     fieldsToValidate.forEach((field) => {
-      console.log(field);
       if (!data.get(field)) {
         newErrors[field] = "This field is required";
       }
@@ -169,7 +168,7 @@ export default function SignUp() {
         ? "http://localhost:8080/doctors/signup"
         : "http://localhost:8080/patients/signup";
     try {
-      console.log(formData);
+      
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -180,7 +179,6 @@ export default function SignUp() {
 
       if (response.ok) {
         // Handle successful response
-        console.log("Form data submitted successfully");
         navigate("/");
       } else {
         // Handle unsuccessful response

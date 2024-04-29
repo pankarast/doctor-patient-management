@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../AuthContext";
-import { Button, TextField, Grid, Box } from "@mui/material";
-
+import { Button, TextField, Grid, Box, Snackbar, Alert } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
@@ -9,6 +8,24 @@ import Dayjs from "dayjs";
 import AddressInput from "../../Address/AddressInput";
 
 function Profile() {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarInfo, setSnackbarInfo] = useState({
+    message: "",
+    severity: "success", // or 'error', 'warning', 'info'
+  });
+
+  const handleSnackbarOpen = (message, severity) => {
+    setSnackbarInfo({ message, severity });
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
   const { userType, userId, updateUserName } = useAuth();
   const defaultStartTime = Dayjs().hour(9).minute(0);
   const defaultEndTime = Dayjs().hour(17).minute(0);
@@ -27,11 +44,11 @@ function Profile() {
   });
 
   const [userData, setUserData] = useState({
-    socialSecurityNumber: '',
-    name: '',
-    password: '',
-    specialty: '',
-    contactDetails: ''
+    socialSecurityNumber: "",
+    name: "",
+    password: "",
+    specialty: "",
+    contactDetails: "",
   });
   const [resetAddressInput, setResetAddressInput] = useState(false);
 
@@ -48,10 +65,10 @@ function Profile() {
   const handleLocationSelect = (location) => {
     // Keep the selected location in its original format, without modifying it
     setSelectedLocation({
-        formattedAddress: location.formattedAddress,
-        lat: location.lat,
-        lng: location.lng,
-      });
+      formattedAddress: location.formattedAddress,
+      lat: location.lat,
+      lng: location.lng,
+    });
 
     // Split the formatted address to extract parts
     const addressParts = location.formattedAddress.split(", ");
@@ -77,7 +94,6 @@ function Profile() {
     setWorkingHours({ ...workingHours, [key]: newValue });
   };
 
-
   const validateFields = (data) => {
     let newErrors = {};
     const fieldsToValidate =
@@ -92,13 +108,13 @@ function Profile() {
         : ["socialSecurityNumber", "name", "password", "contactDetails"];
 
     fieldsToValidate.forEach((field) => {
-      console.log(field);
       if (!data.get(field)) {
         newErrors[field] = "This field is required";
       }
-      if (userType === "doctor"&&(
-        !selectedLocation.formattedAddress ||
-        !validateAddress(selectedLocation.formattedAddress))
+      if (
+        userType === "doctor" &&
+        (!selectedLocation.formattedAddress ||
+          !validateAddress(selectedLocation.formattedAddress))
       ) {
         newErrors["formattedAddress"] = "Please select a valid address.";
       }
@@ -113,15 +129,14 @@ function Profile() {
   };
 
   const resetFormFields = () => {
-
-    setResetAddressInput(true);  // Toggle to trigger useEffect in AddressInput
+    setResetAddressInput(true); // Toggle to trigger useEffect in AddressInput
     // Reset all your state here
     setUserData({
-      socialSecurityNumber: '',
-      name: '',
-      password: '',
-      specialty: '',
-      contactDetails: ''
+      socialSecurityNumber: "",
+      name: "",
+      password: "",
+      specialty: "",
+      contactDetails: "",
     });
     setWorkingHours({
       mondayStart: defaultStartTime,
@@ -144,12 +159,14 @@ function Profile() {
     setErrors({});
   };
 
-  
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     if (!validateFields(data)) {
-      console.error("Validation errors:", errors);
+      handleSnackbarOpen(
+        "Validation failed. Please check the form fields.",
+        "error"
+      );
       return;
     }
 
@@ -193,8 +210,8 @@ function Profile() {
             name: data.get("name"),
             contactDetails: data.get("contactDetails"),
           };
-    const endpoint =`http://localhost:8080/${userType}s/${userId}`
-        
+    const endpoint = `http://localhost:8080/${userType}s/${userId}`;
+
     try {
       const response = await fetch(endpoint, {
         method: "PUT",
@@ -206,171 +223,209 @@ function Profile() {
 
       if (response.ok) {
         // Handle successful response
-        console.log("Form data submitted successfully");
+        handleSnackbarOpen("Form data submitted successfully.", "success");
         const newName = data.get("name"); // Get the new name from the form
         updateUserName(newName); // Update the userName in context and session storage
         resetFormFields();
-        console.log()
       } else {
-        // Handle unsuccessful response
-        console.error("Form submission failed:", response.statusText);
+        handleSnackbarOpen(
+          `Form submission failed: ${response.statusText}`,
+          "error"
+        );
       }
     } catch (error) {
-      // Handle network error
-      console.error("Error submitting form data:", error);
+      handleSnackbarOpen(
+        `Error submitting form data: ${error.message}`,
+        "error"
+      );
     }
   };
 
   return (
     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
- <Grid container spacing={3}>
-              {userType === "doctor" && (
-                <>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Social Security Number"
-                      name="socialSecurityNumber"
-                      required
-                      value={userData.socialSecurityNumber}
-                      onChange={e => setUserData({ ...userData, socialSecurityNumber: e.target.value })}
-                      sx={{ mb: 2 }}
-                      error={!!errors.socialSecurityNumber}
-                      helperText={errors.socialSecurityNumber}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Name"
-                      name="name"
-                      required
-                      value={userData.name}
-                      onChange={e => setUserData({ ...userData, name: e.target.value })}
-                      sx={{ mb: 2 }}
-                      error={!!errors.name}
-                      helperText={errors.name}
-                    />
-                    <TextField
-                      fullWidth
-                      id="password"
-                      label="Password"
-                      name="password"
-                      type="password"
-                      required
-                      value={userData.password}
-                      onChange={e => setUserData({ ...userData, password: e.target.value })}
-                      sx={{ mb: 2 }}
-                      error={!!errors.password}
-                      helperText={errors.password}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Specialty"
-                      name="specialty"
-                      required
-                      value={userData.specialty}
-                      onChange={e => setUserData({ ...userData, specialty: e.target.value })}
-                      sx={{ mb: 2 }}
-                      error={!!errors.specialty}
-                      helperText={errors.specialty}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Contact Details"
-                      name="contactDetails"
-                      required
-                      value={userData.contactDetails}
-                      onChange={e => setUserData({ ...userData, contactDetails: e.target.value })}
-                      sx={{ mb: 2 }}
-                      error={!!errors.contactDetails}
-                      helperText={errors.contactDetails}
-                    />
+      <Grid container spacing={3}>
+        {userType === "doctor" && (
+          <>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Social Security Number"
+                name="socialSecurityNumber"
+                required
+                value={userData.socialSecurityNumber}
+                onChange={(e) =>
+                  setUserData({
+                    ...userData,
+                    socialSecurityNumber: e.target.value,
+                  })
+                }
+                sx={{ mb: 2 }}
+                error={!!errors.socialSecurityNumber}
+                helperText={errors.socialSecurityNumber}
+              />
+              <TextField
+                fullWidth
+                label="Name"
+                name="name"
+                required
+                value={userData.name}
+                onChange={(e) =>
+                  setUserData({ ...userData, name: e.target.value })
+                }
+                sx={{ mb: 2 }}
+                error={!!errors.name}
+                helperText={errors.name}
+              />
+              <TextField
+                fullWidth
+                id="password"
+                label="Password"
+                name="password"
+                type="password"
+                required
+                value={userData.password}
+                onChange={(e) =>
+                  setUserData({ ...userData, password: e.target.value })
+                }
+                sx={{ mb: 2 }}
+                error={!!errors.password}
+                helperText={errors.password}
+              />
+              <TextField
+                fullWidth
+                label="Specialty"
+                name="specialty"
+                required
+                value={userData.specialty}
+                onChange={(e) =>
+                  setUserData({ ...userData, specialty: e.target.value })
+                }
+                sx={{ mb: 2 }}
+                error={!!errors.specialty}
+                helperText={errors.specialty}
+              />
+              <TextField
+                fullWidth
+                label="Contact Details"
+                name="contactDetails"
+                required
+                value={userData.contactDetails}
+                onChange={(e) =>
+                  setUserData({ ...userData, contactDetails: e.target.value })
+                }
+                sx={{ mb: 2 }}
+                error={!!errors.contactDetails}
+                helperText={errors.contactDetails}
+              />
 
-                    <AddressInput
-                      onLocationSelect={handleLocationSelect}
-                      error={!!errors.formattedAddress}
-                      helperText={
-                        errors.formattedAddress ||
-                        "Please select a valid address."
-                      }
-                      resetInput={resetAddressInput}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <Grid container spacing={2}>
-                        {Object.entries(workingHours).map(([key, value]) => (
-                          <Grid item xs={6} key={key}>
-                            <TimePicker
-                              label={`${key.split(/(?=[A-Z])/).join(" ")} Time`}
-                              value={value}
-                              onChange={(newValue) =>
-                                handleTimeChange(newValue, key)
-                              }
-                              renderInput={(params) => (
-                                <TextField {...params} />
-                              )}
-                            />
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </LocalizationProvider>
-                  </Grid>
-                </>
-              )}
-              {userType === "patient" && (
-                <>
-                  <TextField
-                      fullWidth
-                      label="Social Security Number"
-                      name="socialSecurityNumber"
-                      required
-                      value={userData.socialSecurityNumber}
-                      onChange={e => setUserData({ ...userData, socialSecurityNumber: e.target.value })}
-                      sx={{ mb: 2 }}
-                      error={!!errors.socialSecurityNumber}
-                      helperText={errors.socialSecurityNumber}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Name"
-                      name="name"
-                      required
-                      value={userData.name}
-                      onChange={e => setUserData({ ...userData, name: e.target.value })}
-                      sx={{ mb: 2 }}
-                      error={!!errors.name}
-                      helperText={errors.name}
-                    />
-                    <TextField
-                      fullWidth
-                      id="password"
-                      label="Password"
-                      name="password"
-                      type="password"
-                      required
-                      value={userData.password}
-                      onChange={e => setUserData({ ...userData, password: e.target.value })}
-                      sx={{ mb: 2 }}
-                      error={!!errors.password}
-                      helperText={errors.password}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Contact Details"
-                      name="contactDetails"
-                      required
-                      value={userData.contactDetails}
-                      onChange={e => setUserData({ ...userData, contactDetails: e.target.value })}
-                      sx={{ mb: 2 }}
-                      error={!!errors.contactDetails}
-                      helperText={errors.contactDetails}
-                    />
-                </>
-              )}
+              <AddressInput
+                onLocationSelect={handleLocationSelect}
+                error={!!errors.formattedAddress}
+                helperText={
+                  errors.formattedAddress || "Please select a valid address."
+                }
+                resetInput={resetAddressInput}
+              />
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Grid container spacing={2}>
+                  {Object.entries(workingHours).map(([key, value]) => (
+                    <Grid item xs={6} key={key}>
+                      <TimePicker
+                        label={`${key.split(/(?=[A-Z])/).join(" ")} Time`}
+                        value={value}
+                        onChange={(newValue) => handleTimeChange(newValue, key)}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </LocalizationProvider>
+            </Grid>
+          </>
+        )}
+        {userType === "patient" && (
+          <>
+            <TextField
+              fullWidth
+              label="Social Security Number"
+              name="socialSecurityNumber"
+              required
+              value={userData.socialSecurityNumber}
+              onChange={(e) =>
+                setUserData({
+                  ...userData,
+                  socialSecurityNumber: e.target.value,
+                })
+              }
+              sx={{ mb: 2 }}
+              error={!!errors.socialSecurityNumber}
+              helperText={errors.socialSecurityNumber}
+            />
+            <TextField
+              fullWidth
+              label="Name"
+              name="name"
+              required
+              value={userData.name}
+              onChange={(e) =>
+                setUserData({ ...userData, name: e.target.value })
+              }
+              sx={{ mb: 2 }}
+              error={!!errors.name}
+              helperText={errors.name}
+            />
+            <TextField
+              fullWidth
+              id="password"
+              label="Password"
+              name="password"
+              type="password"
+              required
+              value={userData.password}
+              onChange={(e) =>
+                setUserData({ ...userData, password: e.target.value })
+              }
+              sx={{ mb: 2 }}
+              error={!!errors.password}
+              helperText={errors.password}
+            />
+            <TextField
+              fullWidth
+              label="Contact Details"
+              name="contactDetails"
+              required
+              value={userData.contactDetails}
+              onChange={(e) =>
+                setUserData({ ...userData, contactDetails: e.target.value })
+              }
+              sx={{ mb: 2 }}
+              error={!!errors.contactDetails}
+              helperText={errors.contactDetails}
+            />
+          </>
+        )}
+      </Grid>
+
       <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, mb: 2 }}>
         Change Data
       </Button>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarInfo.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarInfo.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

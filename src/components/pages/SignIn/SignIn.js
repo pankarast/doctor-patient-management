@@ -12,11 +12,28 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useAuth } from "../../AuthContext";
 import { Link as RouterLink } from "react-router-dom";
-import { Select, MenuItem, FormControl } from "@mui/material";
+import { Select, MenuItem, FormControl, Snackbar, Alert } from "@mui/material";
 
 const defaultTheme = createTheme();
 
 export default function SignIn() {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarInfo, setSnackbarInfo] = useState({
+    message: "",
+    severity: "error", // can be "error", "success", "info", or "warning"
+  });
+  const handleSnackbarOpen = (message, severity) => {
+    setSnackbarInfo({ message, severity });
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
   const navigate = useNavigate();
   const { login } = useAuth();
   const [userType, setUserType] = useState("patient");
@@ -57,13 +74,16 @@ export default function SignIn() {
       hasError = true;
     }
 
-    if (hasError) return;
+    if (hasError) {
+      handleSnackbarOpen("Please fill in all required fields.", "error");
+      return;
+    }
 
     try {
       await login(amka, password, userType);
       navigate("/");
     } catch (error) {
-      console.error("Login failed:", error);
+      handleSnackbarOpen("Login failed: Invalid AMKA or Password", "error");
     }
   };
 
@@ -142,6 +162,20 @@ export default function SignIn() {
             </Link>
           </Box>
         </Box>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert
+            onClose={handleSnackbarClose}
+            severity={snackbarInfo.severity}
+            sx={{ width: "100%" }}
+          >
+            {snackbarInfo.message}
+          </Alert>
+        </Snackbar>
       </Container>
     </ThemeProvider>
   );

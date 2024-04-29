@@ -87,7 +87,6 @@ function DoctorsList() {
 
   const handleSearchClick = () => {
     fetchDoctors();
-    console.log("Search clicked!");
   };
 
   const handleAppointmentClick = (doctorId) => {
