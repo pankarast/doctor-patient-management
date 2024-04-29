@@ -85,60 +85,59 @@ export default function SignUp() {
 
   const validateFields = (data) => {
     let newErrors = {};
+    // Check AMKA regardless of userType
+    if (!/^\d{11}$/.test(amka)) {
+      newErrors.socialSecurityNumber =
+        "AMKA must be exactly 11 numeric digits.";
+    }
+    // Add other validations based on userType
     const fieldsToValidate =
       userType === "doctor"
-        ? [
-            "socialSecurityNumber",
-            "name",
-            "password",
-            "specialty",
-            "contactDetails",
-          ]
-        : ["socialSecurityNumber", "name", "password", "contactDetails"];
+        ? ["name", "password", "specialty", "contactDetails"]
+        : ["name", "password", "contactDetails"];
 
     fieldsToValidate.forEach((field) => {
       if (!data.get(field)) {
         newErrors[field] = "This field is required";
       }
-      if (userType === "doctor"&&(
-        !selectedLocation.formattedAddress ||
-        !validateAddress(selectedLocation.formattedAddress))
-      ) {
-        newErrors["formattedAddress"] = "Please select a valid address.";
-      }
     });
+
+    if (
+      userType === "doctor" &&
+      (!selectedLocation.formattedAddress ||
+        !validateAddress(selectedLocation.formattedAddress))
+    ) {
+      newErrors["formattedAddress"] = "Please select a valid address.";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   // Helper function to validate address
   const validateAddress = (address) => {
     return address && address.length > 10;
   };
 
   const handleChangeAMKA = (event) => {
-    const numericValue = event.target.value.replace(/[^0-9]/g, '');
-    if (!/^\d{11}$/.test(numericValue) && numericValue.length) {
-      setErrors(prev => ({ ...prev, socialSecurityNumber: "AMKA must be exactly 11 numeric digits." }));
-    } else {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors.socialSecurityNumber;
-        return newErrors;
-      });
-    }
-    setAmka(numericValue);
+    const numericValue = event.target.value.replace(/[^0-9]/g, "");
+    setAmka(numericValue); // Update amka immediately
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      if (!/^\d{11}$/.test(numericValue) && numericValue.length) {
+        newErrors.socialSecurityNumber =
+          "AMKA must be exactly 11 numeric digits.";
+      } else {
+        delete newErrors.socialSecurityNumber; // Remove AMKA error if valid
+      }
+      return newErrors;
+    });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    const amkaError = !/^\d{11}$/.test(amka);
-  if (amkaError) {
-    setErrors(prev => ({ ...prev, socialSecurityNumber: "AMKA must be exactly 11 numeric digits." }));
-    return; // Stop submission if AMKA validation fails
-  }
     if (!validateFields(data)) {
       console.error("Validation errors:", errors);
       return;
@@ -160,7 +159,7 @@ export default function SignUp() {
       },
       {}
     );
-    
+
     const workingHoursArray = Object.values(formattedWorkingHours);
 
     const formData =
@@ -189,7 +188,6 @@ export default function SignUp() {
         ? "http://localhost:8080/doctors/signup"
         : "http://localhost:8080/patients/signup";
     try {
-      
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -244,9 +242,9 @@ export default function SignUp() {
             component="form"
             noValidate
             onSubmit={handleSubmit}
-            sx={{ mt: 3 }}
+            sx={{ mt: 2, width: "100%" }}
           >
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
               {userType === "doctor" && (
                 <>
                   <Grid item xs={12} sm={6}>
@@ -332,45 +330,55 @@ export default function SignUp() {
               )}
               {userType === "patient" && (
                 <>
-                  <TextField
-                    fullWidth
-                    label="AMKA"
-                    name="socialSecurityNumber"
-                    required
-                    onChange={handleChangeAMKA}
-                    sx={{ mb: 2 }}
-                    error={!!errors.socialSecurityNumber}
-                    helperText={errors.socialSecurityNumber}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Name"
-                    name="name"
-                    required
-                    sx={{ mb: 2 }}
-                    error={!!errors.name}
-                    helperText={errors.name}
-                  />
-                  <TextField
-                    fullWidth
-                    id="password"
-                    label="Password"
-                    name="password"
-                    type="password"
-                    required
-                    sx={{ mb: 2 }}
-                    error={!!errors.password}
-                    helperText={errors.password}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Contact Details"
-                    name="contactDetails"
-                    required
-                    sx={{ mb: 2 }}
-                    error={!!errors.contactDetails}
-                    helperText={errors.contactDetails}
-                  />
+                  <Grid item xs={12}>
+                    {" "}
+                    {/* This ensures it takes the full width */}
+                    <TextField
+                      fullWidth
+                      label="AMKA"
+                      name="socialSecurityNumber"
+                      required
+                      onChange={handleChangeAMKA}
+                      sx={{ mb: 2 }}
+                      error={!!errors.socialSecurityNumber}
+                      helperText={errors.socialSecurityNumber}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Name"
+                      name="name"
+                      required
+                      sx={{ mb: 2 }}
+                      error={!!errors.name}
+                      helperText={errors.name}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      id="password"
+                      label="Password"
+                      name="password"
+                      type="password"
+                      required
+                      sx={{ mb: 2 }}
+                      error={!!errors.password}
+                      helperText={errors.password}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Contact Details"
+                      name="contactDetails"
+                      required
+                      sx={{ mb: 2 }}
+                      error={!!errors.contactDetails}
+                      helperText={errors.contactDetails}
+                    />
+                  </Grid>
                 </>
               )}
             </Grid>
