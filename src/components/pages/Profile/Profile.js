@@ -26,6 +26,17 @@ function Profile() {
     fridayEnd: defaultEndTime,
   });
 
+  const [userData, setUserData] = useState({
+    socialSecurityNumber: '',
+    name: '',
+    password: '',
+    specialty: '',
+    contactDetails: ''
+  });
+  const [resetAddressInput, setResetAddressInput] = useState(false);
+
+  const [errors, setErrors] = useState({});
+
   const [area, setArea] = useState("");
 
   const [selectedLocation, setSelectedLocation] = useState({
@@ -36,7 +47,11 @@ function Profile() {
 
   const handleLocationSelect = (location) => {
     // Keep the selected location in its original format, without modifying it
-    setSelectedLocation(location);
+    setSelectedLocation({
+        formattedAddress: location.formattedAddress,
+        lat: location.lat,
+        lng: location.lng,
+      });
 
     // Split the formatted address to extract parts
     const addressParts = location.formattedAddress.split(", ");
@@ -62,10 +77,81 @@ function Profile() {
     setWorkingHours({ ...workingHours, [key]: newValue });
   };
 
+
+  const validateFields = (data) => {
+    let newErrors = {};
+    const fieldsToValidate =
+      userType === "doctor"
+        ? [
+            "socialSecurityNumber",
+            "name",
+            "password",
+            "specialty",
+            "contactDetails",
+          ]
+        : ["socialSecurityNumber", "name", "password", "contactDetails"];
+
+    fieldsToValidate.forEach((field) => {
+      console.log(field);
+      if (!data.get(field)) {
+        newErrors[field] = "This field is required";
+      }
+      if (userType === "doctor"&&(
+        !selectedLocation.formattedAddress ||
+        !validateAddress(selectedLocation.formattedAddress))
+      ) {
+        newErrors["formattedAddress"] = "Please select a valid address.";
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  // Helper function to validate address
+  const validateAddress = (address) => {
+    return address && address.length > 10;
+  };
+
+  const resetFormFields = () => {
+
+    setResetAddressInput(true);  // Toggle to trigger useEffect in AddressInput
+    // Reset all your state here
+    setUserData({
+      socialSecurityNumber: '',
+      name: '',
+      password: '',
+      specialty: '',
+      contactDetails: ''
+    });
+    setWorkingHours({
+      mondayStart: defaultStartTime,
+      mondayEnd: defaultEndTime,
+      tuesdayStart: defaultStartTime,
+      tuesdayEnd: defaultEndTime,
+      wednesdayStart: defaultStartTime,
+      wednesdayEnd: defaultEndTime,
+      thursdayStart: defaultStartTime,
+      thursdayEnd: defaultEndTime,
+      fridayStart: defaultStartTime,
+      fridayEnd: defaultEndTime,
+    });
+    setSelectedLocation({
+      formattedAddress: "",
+      lat: null,
+      lng: null,
+    });
+    setArea("");
+    setErrors({});
+  };
+
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const data = new FormData(event.currentTarget);
+    if (!validateFields(data)) {
+      console.error("Validation errors:", errors);
+      return;
+    }
 
     // Convert Dayjs objects to strings in the required format
     const formattedWorkingHours = Object.keys(workingHours).reduce(
@@ -107,10 +193,8 @@ function Profile() {
             name: data.get("name"),
             contactDetails: data.get("contactDetails"),
           };
-    const endpoint =
-      userType === "doctor"
-        ? `http://localhost:8080/doctors/${userId}`
-        : `http://localhost:8080/patients/${userId}`;
+    const endpoint =`http://localhost:8080/${userType}s/${userId}`
+        
     try {
       const response = await fetch(endpoint, {
         method: "PUT",
@@ -125,6 +209,8 @@ function Profile() {
         console.log("Form data submitted successfully");
         const newName = data.get("name"); // Get the new name from the form
         updateUserName(newName); // Update the userName in context and session storage
+        resetFormFields();
+        console.log()
       } else {
         // Handle unsuccessful response
         console.error("Form submission failed:", response.statusText);
@@ -137,206 +223,151 @@ function Profile() {
 
   return (
     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-      <Grid container spacing={3}>
-        {userType === "doctor" && (
-          <>
-            <Grid item xs={12} sm={6}>
-              {" "}
-              {/* Doctor details column */}
-              <TextField
-                fullWidth
-                label="Social Security Number"
-                name="socialSecurityNumber"
-                required
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                fullWidth
-                label="Name"
-                name="name"
-                required
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                fullWidth
-                id="password"
-                label="Password"
-                name="password"
-                type="password"
-                required
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                fullWidth
-                label="Specialty"
-                name="specialty"
-                required
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                fullWidth
-                label="Contact Details"
-                name="contactDetails"
-                required
-                sx={{ mb: 2 }}
-              />
-              <div>
-                <AddressInput onLocationSelect={handleLocationSelect} />
-              </div>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={12}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <TimePicker
-                          label="Monday Start"
-                          value={workingHours.mondayStart}
-                          onChange={(newValue) =>
-                            handleTimeChange(newValue, "mondayStart")
-                          }
-                          timeFormat="HH:mm"
-                          views={["hours", "0"]}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TimePicker
-                          label="Monday End"
-                          value={workingHours.mondayEnd}
-                          onChange={(newValue) =>
-                            handleTimeChange(newValue, "mondayEnd")
-                          }
-                          views={["hours", "0"]}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TimePicker
-                          label="Tuesday Start"
-                          value={workingHours.tuesdayStart}
-                          onChange={(newValue) =>
-                            handleTimeChange(newValue, "tuesdayStart")
-                          }
-                          views={["hours", "0"]}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TimePicker
-                          label="Tuesday End"
-                          value={workingHours.tuesdayEnd}
-                          onChange={(newValue) =>
-                            handleTimeChange(newValue, "tuesdayEnd")
-                          }
-                          views={["hours", "0"]}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TimePicker
-                          label="Wednesday Start"
-                          value={workingHours.wednesdayStart}
-                          onChange={(newValue) =>
-                            handleTimeChange(newValue, "wednesdayStart")
-                          }
-                          views={["hours", "0"]}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TimePicker
-                          label="Wednesday End"
-                          value={workingHours.wednesdayEnd}
-                          onChange={(newValue) =>
-                            handleTimeChange(newValue, "wednesdayEnd")
-                          }
-                          views={["hours", "0"]}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Grid>
+ <Grid container spacing={3}>
+              {userType === "doctor" && (
+                <>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Social Security Number"
+                      name="socialSecurityNumber"
+                      required
+                      value={userData.socialSecurityNumber}
+                      onChange={e => setUserData({ ...userData, socialSecurityNumber: e.target.value })}
+                      sx={{ mb: 2 }}
+                      error={!!errors.socialSecurityNumber}
+                      helperText={errors.socialSecurityNumber}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Name"
+                      name="name"
+                      required
+                      value={userData.name}
+                      onChange={e => setUserData({ ...userData, name: e.target.value })}
+                      sx={{ mb: 2 }}
+                      error={!!errors.name}
+                      helperText={errors.name}
+                    />
+                    <TextField
+                      fullWidth
+                      id="password"
+                      label="Password"
+                      name="password"
+                      type="password"
+                      required
+                      value={userData.password}
+                      onChange={e => setUserData({ ...userData, password: e.target.value })}
+                      sx={{ mb: 2 }}
+                      error={!!errors.password}
+                      helperText={errors.password}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Specialty"
+                      name="specialty"
+                      required
+                      value={userData.specialty}
+                      onChange={e => setUserData({ ...userData, specialty: e.target.value })}
+                      sx={{ mb: 2 }}
+                      error={!!errors.specialty}
+                      helperText={errors.specialty}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Contact Details"
+                      name="contactDetails"
+                      required
+                      value={userData.contactDetails}
+                      onChange={e => setUserData({ ...userData, contactDetails: e.target.value })}
+                      sx={{ mb: 2 }}
+                      error={!!errors.contactDetails}
+                      helperText={errors.contactDetails}
+                    />
 
-                  <Grid item xs={12} md={12}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <TimePicker
-                          label="Thursday Start"
-                          value={workingHours.thursdayStart}
-                          onChange={(newValue) =>
-                            handleTimeChange(newValue, "thursdayStart")
-                          }
-                          views={["hours", "0"]}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TimePicker
-                          label="Thursday End"
-                          value={workingHours.thursdayEnd}
-                          onChange={(newValue) =>
-                            handleTimeChange(newValue, "thursdayEnd")
-                          }
-                          views={["hours", "0"]}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TimePicker
-                          label="Friday Start"
-                          value={workingHours.fridayStart}
-                          onChange={(newValue) =>
-                            handleTimeChange(newValue, "fridayStart")
-                          }
-                          views={["hours", "0"]}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TimePicker
-                          label="Friday End"
-                          value={workingHours.fridayEnd}
-                          onChange={(newValue) =>
-                            handleTimeChange(newValue, "fridayEnd")
-                          }
-                          views={["hours", "0"]}
-                        />
-                      </Grid>
-                    </Grid>
+                    <AddressInput
+                      onLocationSelect={handleLocationSelect}
+                      error={!!errors.formattedAddress}
+                      helperText={
+                        errors.formattedAddress ||
+                        "Please select a valid address."
+                      }
+                      resetInput={resetAddressInput}
+                    />
                   </Grid>
-                </Grid>
-              </LocalizationProvider>
+                  <Grid item xs={12} sm={6}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <Grid container spacing={2}>
+                        {Object.entries(workingHours).map(([key, value]) => (
+                          <Grid item xs={6} key={key}>
+                            <TimePicker
+                              label={`${key.split(/(?=[A-Z])/).join(" ")} Time`}
+                              value={value}
+                              onChange={(newValue) =>
+                                handleTimeChange(newValue, key)
+                              }
+                              renderInput={(params) => (
+                                <TextField {...params} />
+                              )}
+                            />
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </LocalizationProvider>
+                  </Grid>
+                </>
+              )}
+              {userType === "patient" && (
+                <>
+                  <TextField
+                      fullWidth
+                      label="Social Security Number"
+                      name="socialSecurityNumber"
+                      required
+                      value={userData.socialSecurityNumber}
+                      onChange={e => setUserData({ ...userData, socialSecurityNumber: e.target.value })}
+                      sx={{ mb: 2 }}
+                      error={!!errors.socialSecurityNumber}
+                      helperText={errors.socialSecurityNumber}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Name"
+                      name="name"
+                      required
+                      value={userData.name}
+                      onChange={e => setUserData({ ...userData, name: e.target.value })}
+                      sx={{ mb: 2 }}
+                      error={!!errors.name}
+                      helperText={errors.name}
+                    />
+                    <TextField
+                      fullWidth
+                      id="password"
+                      label="Password"
+                      name="password"
+                      type="password"
+                      required
+                      value={userData.password}
+                      onChange={e => setUserData({ ...userData, password: e.target.value })}
+                      sx={{ mb: 2 }}
+                      error={!!errors.password}
+                      helperText={errors.password}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Contact Details"
+                      name="contactDetails"
+                      required
+                      value={userData.contactDetails}
+                      onChange={e => setUserData({ ...userData, contactDetails: e.target.value })}
+                      sx={{ mb: 2 }}
+                      error={!!errors.contactDetails}
+                      helperText={errors.contactDetails}
+                    />
+                </>
+              )}
             </Grid>
-          </>
-        )}
-      </Grid>
-      {userType === "patient" && (
-        <>
-          <TextField
-            fullWidth
-            label="Social Security Number"
-            name="socialSecurityNumber"
-            required
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            fullWidth
-            label="Name"
-            name="name"
-            required
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            fullWidth
-            id="password"
-            label="Password"
-            name="password"
-            type="password"
-            required
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            fullWidth
-            label="Contact Details"
-            name="contactDetails"
-            required
-            sx={{ mb: 2 }}
-          />
-        </>
-      )}
       <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, mb: 2 }}>
         Change Data
       </Button>

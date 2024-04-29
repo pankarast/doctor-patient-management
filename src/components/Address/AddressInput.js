@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { TextField } from "@mui/material";
 import { Autocomplete } from "@react-google-maps/api";
 
-const AddressInput = ({ onLocationSelect, error, helperText }) => {
+const AddressInput = ({ onLocationSelect, error, helperText, resetInput  }) => {
   const [autocomplete, setAutocomplete] = useState(null);
   const [inputValue, setInputValue] = useState("");
 
@@ -25,6 +25,13 @@ const AddressInput = ({ onLocationSelect, error, helperText }) => {
       console.log("Autocomplete is not loaded yet!");
     }
   };
+
+    // Reset input value when prop changes
+    useEffect(() => {
+      if (resetInput) {
+        setInputValue("");
+      }
+    }, [resetInput]);
 
   return (
     <div style={{ position: "relative", width: "100%" }}>

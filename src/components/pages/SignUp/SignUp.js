@@ -100,9 +100,9 @@ export default function SignUp() {
       if (!data.get(field)) {
         newErrors[field] = "This field is required";
       }
-      if (
+      if (userType === "doctor"&&(
         !selectedLocation.formattedAddress ||
-        !validateAddress(selectedLocation.formattedAddress)
+        !validateAddress(selectedLocation.formattedAddress))
       ) {
         newErrors["formattedAddress"] = "Please select a valid address.";
       }
@@ -113,7 +113,7 @@ export default function SignUp() {
   };
   // Helper function to validate address
   const validateAddress = (address) => {
-    return address && address.length > 10; // Example check: address must be longer than 10 characters
+    return address && address.length > 10;
   };
 
   const handleSubmit = async (event) => {
