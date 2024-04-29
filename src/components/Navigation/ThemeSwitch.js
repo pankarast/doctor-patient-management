@@ -14,7 +14,7 @@ const ThemeSwitch = styled(Switch)(({ theme }) => ({
       transform: "translateX(22px)",
       transition: ".4s",
       "& .MuiSwitch-thumb:before": {
-        backgroundColor: "var(--secondaryTheme)",
+        backgroundColor: "var(--secondaryLight)",
         borderRadius: "50%",
         backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
           "#fff"
@@ -27,7 +27,6 @@ const ThemeSwitch = styled(Switch)(({ theme }) => ({
     },
   },
   "& .MuiSwitch-thumb": {
-    backgroundColor: "var(--primaryTheme)",
     width: 32,
     height: 32,
     "&:before": {

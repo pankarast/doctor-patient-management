@@ -49,6 +49,7 @@ export default function SignUp() {
     lat: null,
     lng: null,
   });
+  const [amka, setAmka] = useState(""); // State to hold AMKA
 
   useEffect(() => {
     // Clear errors when userType changes
@@ -115,9 +116,29 @@ export default function SignUp() {
     return address && address.length > 10;
   };
 
+  const handleChangeAMKA = (event) => {
+    const numericValue = event.target.value.replace(/[^0-9]/g, '');
+    if (!/^\d{11}$/.test(numericValue) && numericValue.length) {
+      setErrors(prev => ({ ...prev, socialSecurityNumber: "AMKA must be exactly 11 numeric digits." }));
+    } else {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.socialSecurityNumber;
+        return newErrors;
+      });
+    }
+    setAmka(numericValue);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
+    const amkaError = !/^\d{11}$/.test(amka);
+  if (amkaError) {
+    setErrors(prev => ({ ...prev, socialSecurityNumber: "AMKA must be exactly 11 numeric digits." }));
+    return; // Stop submission if AMKA validation fails
+  }
     if (!validateFields(data)) {
       console.error("Validation errors:", errors);
       return;
@@ -139,7 +160,7 @@ export default function SignUp() {
       },
       {}
     );
-
+    
     const workingHoursArray = Object.values(formattedWorkingHours);
 
     const formData =
@@ -231,9 +252,10 @@ export default function SignUp() {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
-                      label="Social Security Number"
+                      label="AMKA"
                       name="socialSecurityNumber"
                       required
+                      onChange={handleChangeAMKA}
                       sx={{ mb: 2 }}
                       error={!!errors.socialSecurityNumber}
                       helperText={errors.socialSecurityNumber}
@@ -312,9 +334,10 @@ export default function SignUp() {
                 <>
                   <TextField
                     fullWidth
-                    label="Social Security Number"
+                    label="AMKA"
                     name="socialSecurityNumber"
                     required
+                    onChange={handleChangeAMKA}
                     sx={{ mb: 2 }}
                     error={!!errors.socialSecurityNumber}
                     helperText={errors.socialSecurityNumber}
