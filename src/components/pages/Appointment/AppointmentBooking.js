@@ -14,10 +14,32 @@ import {
   Select,
   FormControl,
   InputLabel,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useAuth } from "../../AuthContext";
+import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter"; // Import necessary plugin for comparison
+dayjs.extend(isSameOrAfter);
 
 function AppointmentBooking() {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarInfo, setSnackbarInfo] = useState({
+    message: "",
+    severity: "error", // can be "error", "success", "info", or "warning"
+  });
+  const handleSnackbarOpen = (message, severity) => {
+    setSnackbarInfo({ message, severity });
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
   const { doctorId } = useParams(); // Get the doctor ID from URL parameters
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");
@@ -51,7 +73,16 @@ function AppointmentBooking() {
           console.error("Failed to fetch available hours");
           return;
         }
-        const hours = await response.json();
+        let hours = await response.json();
+
+        // Filter hours if the selected date is today
+        if (dayjs().isSame(selectedDate, "day")) {
+          const currentTime = dayjs().format("HH:mm");
+          hours = hours.filter((hour) =>
+            dayjs(hour, "HH:mm").isSameOrAfter(dayjs(currentTime, "HH:mm"))
+          );
+        }
+
         setAvailableHours(hours);
       };
 
@@ -78,11 +109,11 @@ function AppointmentBooking() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create appointment");
+        handleSnackbarOpen("Failed to book appointment", "error");
       }
 
       // Success feedback
-      alert("Appointment booked successfully");
+      handleSnackbarOpen("Appointment booked successfully");
 
       // Reset selectedDate, selectedTime, and availableHours
       setSelectedDate(null);
@@ -90,8 +121,7 @@ function AppointmentBooking() {
       setReason(""); // Reset the reason field
       setAvailableHours([]);
     } catch (error) {
-      console.error("Error booking appointment:", error);
-      alert("Failed to book appointment");
+      handleSnackbarOpen("Failed to book appointment", "error");
     }
   };
 
@@ -109,6 +139,7 @@ function AppointmentBooking() {
                 value={selectedDate}
                 onChange={setSelectedDate}
                 renderInput={(params) => <TextField {...params} fullWidth />}
+                minDate={dayjs()}
               />
               <FormControl fullWidth style={{ marginTop: "20px" }}>
                 <InputLabel id="time-select-label">Available Hours</InputLabel>
@@ -144,6 +175,20 @@ function AppointmentBooking() {
               >
                 Confirm Appointment
               </Button>
+              <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={3000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+              >
+                <Alert
+                  onClose={handleSnackbarClose}
+                  severity={snackbarInfo.severity}
+                  sx={{ width: "100%" }}
+                >
+                  {snackbarInfo.message}
+                </Alert>
+              </Snackbar>
             </CardContent>
           </Card>
         </Grid>
