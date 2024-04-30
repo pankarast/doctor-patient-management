@@ -46,39 +46,33 @@ function AppointmentList() {
       const appointmentDate = new Date(appointment.appointmentTime);
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Reset hours, minutes, seconds to zero.
-  
+
       // Start and End of the Week
       const startOfWeek = new Date(today);
       startOfWeek.setDate(today.getDate() - today.getDay()); // Adjust to Sunday of this week
-  
+
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(startOfWeek.getDate() + 6); // Adjust to Saturday of this week
-  
+
       // Start and End of the Month
       const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
       endOfMonth.setHours(23, 59, 59, 999); // Set to the very end of the last day of the month
-  
+
       switch (filter) {
         case "week":
-          return (
-            appointmentDate >= startOfWeek &&
-            appointmentDate <= endOfWeek
-          );
+          return appointmentDate >= startOfWeek && appointmentDate <= endOfWeek;
         case "month":
           return (
-            appointmentDate >= startOfMonth &&
-            appointmentDate <= endOfMonth
+            appointmentDate >= startOfMonth && appointmentDate <= endOfMonth
           );
         default:
           return true;
       }
     });
-  
+
     setFilteredAppointments(filtered);
   }, [appointments, filter]);
-  
-  
 
   useEffect(() => {
     const fetchAppointments = async () => {
