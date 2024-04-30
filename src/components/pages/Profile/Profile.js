@@ -249,7 +249,7 @@ function Profile() {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Social Security Number"
+                label="AMKA"
                 name="socialSecurityNumber"
                 required
                 value={userData.socialSecurityNumber}
@@ -349,7 +349,7 @@ function Profile() {
           <>
             <TextField
               fullWidth
-              label="Social Security Number"
+              label="AMKA"
               name="socialSecurityNumber"
               required
               value={userData.socialSecurityNumber}
