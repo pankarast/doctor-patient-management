@@ -97,7 +97,7 @@ function AppointmentBooking() {
       appointmentTime: `${selectedDate.format("YYYY-MM-DD")}T${selectedTime}`,
       reason: reason,
     };
-  
+
     try {
       const response = await fetch("http://localhost:8080/appointments", {
         method: "POST",
@@ -106,14 +106,14 @@ function AppointmentBooking() {
         },
         body: JSON.stringify(appointmentData),
       });
-  
+
       if (!response.ok) {
         handleSnackbarOpen("Failed to book appointment", "error");
       } else {
         // Success feedback
         handleSnackbarOpen("Appointment booked successfully", "success");
       }
-  
+
       // Always reset form regardless of the response
       setSelectedDate(null);
       setSelectedTime("");
@@ -123,7 +123,6 @@ function AppointmentBooking() {
       handleSnackbarOpen("Failed to book appointment", "error");
     }
   };
-  
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

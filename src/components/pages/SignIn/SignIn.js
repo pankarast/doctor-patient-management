@@ -53,13 +53,13 @@ export default function SignIn() {
   const handleChange = (event) => {
     const { name, value } = event.target;
     if (name === "amka") {
-      const numericValue = value.replace(/[^0-9]/g, ''); // Only keep digits
+      const numericValue = value.replace(/[^0-9]/g, ""); // Only keep digits
       setAmka(numericValue);
       // Validate AMKA to be exactly 11 digits.
       if (numericValue && !/^\d{11}$/.test(numericValue)) {
         setError((prev) => ({
           ...prev,
-          amka: "AMKA must be exactly 11 numeric digits."
+          amka: "AMKA must be exactly 11 numeric digits.",
         }));
       } else {
         setError((prev) => ({ ...prev, amka: "" }));
@@ -69,8 +69,6 @@ export default function SignIn() {
       if (value) setError((prev) => ({ ...prev, password: "" }));
     }
   };
-  
-  
 
   const handleSubmit = async (event) => {
     event.preventDefault();

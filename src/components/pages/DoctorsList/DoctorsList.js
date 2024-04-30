@@ -46,8 +46,8 @@ const ContactTypography = styled(Typography)(({ theme }) => ({
 }));
 
 const containerStyle = {
-  width: '100%',
-  height: '400px',
+  width: "100%",
+  height: "400px",
 };
 
 function DoctorsList() {
@@ -97,32 +97,32 @@ function DoctorsList() {
     <Box sx={{ flexGrow: 1, p: 3 }}>
       {/* Search Filters */}
       <FormGroup row>
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Specialty</InputLabel>
-        <Select
-          value={specialty}
-          onChange={(e) => setSpecialty(e.target.value)}
-          label="Specialty"
-        >
-          <MenuItem value={"Cardiology"}>Cardiology</MenuItem>
-          <MenuItem value={"Dermatology"}>Dermatology</MenuItem>
-        </Select>
-      </FormControl>
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Area</InputLabel>
-        <Select
-          value={area}
-          onChange={(e) => setArea(e.target.value)}
-          label="Area"
-        >
-          <MenuItem value={"Athina"}>Athina</MenuItem>
-          <MenuItem value={"Nea Smirni"}>Nea Smirni</MenuItem>
-        </Select>
-      </FormControl>
-      <Button variant="contained" onClick={handleSearchClick}>
-        Search
-      </Button>
-    </FormGroup>
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Specialty</InputLabel>
+          <Select
+            value={specialty}
+            onChange={(e) => setSpecialty(e.target.value)}
+            label="Specialty"
+          >
+            <MenuItem value={"Cardiology"}>Cardiology</MenuItem>
+            <MenuItem value={"Dermatology"}>Dermatology</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Area</InputLabel>
+          <Select
+            value={area}
+            onChange={(e) => setArea(e.target.value)}
+            label="Area"
+          >
+            <MenuItem value={"Athina"}>Athina</MenuItem>
+            <MenuItem value={"Nea Smirni"}>Nea Smirni</MenuItem>
+          </Select>
+        </FormControl>
+        <Button variant="contained" onClick={handleSearchClick}>
+          Search
+        </Button>
+      </FormGroup>
 
       {/* Conditionally Render DoctorsList after Search */}
       {searchPerformed && (
@@ -142,7 +142,9 @@ function DoctorsList() {
                       Number: {doctor.contactDetails}
                     </ContactTypography>
                     <ContactTypography>Area: {doctor.area}</ContactTypography>
-                    <ContactTypography>Address: {doctor.formattedAddress}</ContactTypography>
+                    <ContactTypography>
+                      Address: {doctor.formattedAddress}
+                    </ContactTypography>
                     <Button
                       variant="contained"
                       onClick={() => handleAppointmentClick(doctor.id)}
@@ -159,33 +161,33 @@ function DoctorsList() {
 
       {/* Conditionally Render Google Map displaying doctors */}
       {searchPerformed && (
-              <Box sx={{ mt: 4, mb: 4 }}>
-                <GoogleMap
-                  mapContainerStyle={containerStyle}
-                  center={mapCenter}
-                  zoom={13}
-                >
-                  {doctors.map((doctor) => (
-                    <Marker
-                      key={doctor.id}
-                      position={{ lat: doctor.latitude, lng: doctor.longitude }}
-                      onClick={() => handleMarkerClick(doctor.id)}
-                    >
-                      {activeMarker === doctor.id && (
-                        <InfoWindow onCloseClick={() => setActiveMarker(null)}>
-                          <div>
-                            <h2>{doctor.name}</h2>
-                            <p>Specialty: {doctor.specialty}</p>
-                            <p>Address: {doctor.formattedAddress}</p>
-                            {/* You can include any additional details here */}
-                          </div>
-                        </InfoWindow>
-                      )}
-                    </Marker>
-                  ))}
-                </GoogleMap>
-              </Box>
-            )}
+        <Box sx={{ mt: 4, mb: 4 }}>
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={mapCenter}
+            zoom={13}
+          >
+            {doctors.map((doctor) => (
+              <Marker
+                key={doctor.id}
+                position={{ lat: doctor.latitude, lng: doctor.longitude }}
+                onClick={() => handleMarkerClick(doctor.id)}
+              >
+                {activeMarker === doctor.id && (
+                  <InfoWindow onCloseClick={() => setActiveMarker(null)}>
+                    <div>
+                      <h2>{doctor.name}</h2>
+                      <p>Specialty: {doctor.specialty}</p>
+                      <p>Address: {doctor.formattedAddress}</p>
+                      {/* You can include any additional details here */}
+                    </div>
+                  </InfoWindow>
+                )}
+              </Marker>
+            ))}
+          </GoogleMap>
+        </Box>
+      )}
     </Box>
   );
 }

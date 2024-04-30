@@ -416,7 +416,6 @@ function Profile() {
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-
       >
         <Alert
           onClose={handleSnackbarClose}
