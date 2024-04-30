@@ -91,14 +91,13 @@ function AppointmentBooking() {
   }, [doctorId, selectedDate]);
 
   const handleSubmitAppointment = async () => {
-    // Example structure, adapt according to your API's requirements
     const appointmentData = {
-      doctorId: parseInt(doctorId, 10), // Ensure doctorId is sent as an integer
-      patientId: userId, // Replace with the actual patient ID (logged-in user's ID, for example)
+      doctorId: parseInt(doctorId, 10),
+      patientId: userId,
       appointmentTime: `${selectedDate.format("YYYY-MM-DD")}T${selectedTime}`,
-      reason: reason, // This could also be dynamic based on user input
+      reason: reason,
     };
-
+  
     try {
       const response = await fetch("http://localhost:8080/appointments", {
         method: "POST",
@@ -107,23 +106,24 @@ function AppointmentBooking() {
         },
         body: JSON.stringify(appointmentData),
       });
-
+  
       if (!response.ok) {
         handleSnackbarOpen("Failed to book appointment", "error");
+      } else {
+        // Success feedback
+        handleSnackbarOpen("Appointment booked successfully", "success");
       }
-
-      // Success feedback
-      handleSnackbarOpen("Appointment booked successfully");
-
-      // Reset selectedDate, selectedTime, and availableHours
+  
+      // Always reset form regardless of the response
       setSelectedDate(null);
       setSelectedTime("");
-      setReason(""); // Reset the reason field
       setAvailableHours([]);
+      setReason(""); // Reset the reason field
     } catch (error) {
       handleSnackbarOpen("Failed to book appointment", "error");
     }
   };
+  
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -162,6 +162,7 @@ function AppointmentBooking() {
                   id="reason"
                   label="reason"
                   name="reason"
+                  value={reason}
                   onChange={(e) => setReason(e.target.value)} // Handle the change
                   autoFocus
                 />
